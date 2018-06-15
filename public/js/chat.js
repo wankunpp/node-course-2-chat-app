@@ -17,7 +17,16 @@ const scollToBottom = () =>{
 }
 
 socket.on('connect',() =>{
-    console.log('Connected to server');
+    const params = jQuery.deparam(window.location.search);
+
+    socket.emit('join', params, (err) =>{
+        if(err){
+            alert(err);
+            window.location.href = '/';
+        }else{
+            console.log('no error');
+        }
+    })
 })
 
 socket.on('newMessage',(message) => {
@@ -42,6 +51,16 @@ socket.on('newMessage',(message) => {
 
 socket.on('disconnect',() =>{
     console.log('Disconnected to server');
+})
+
+socket.on('updateUserList', (users) =>{
+    var ul = jQuery('<ol></ol>');
+
+    users.forEach((user) =>{
+        ul.append(jQuery('<li></li>').text(user))
+    });
+
+    jQuery('#users').html(ul);
 })
 
 socket.on('newLocationMessage', (message) =>{
