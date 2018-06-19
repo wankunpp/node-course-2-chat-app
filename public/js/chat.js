@@ -74,15 +74,6 @@ socket.on('newLocationMessage', (message) =>{
 
     jQuery('#messages').append(html);
     scollToBottom();
-    // var li =jQuery('<li></li>');
-    // var a = jQuery('<a target="_blank">current location</a>');
-    // var formattedTime = moment(message.createdAt).format('h:mm a');
-
-    // li.text(`${message.from} ${formattedTime}: `)
-    // a.attr('href', message.url);
-    // li.append(a);
-
-    // jQuery('#messages').append(li);
 })
 
 jQuery('#message-form').on('submit', (e) =>{

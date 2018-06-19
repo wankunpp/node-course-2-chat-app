@@ -21,19 +21,25 @@ io.on('connection',(socket) => {
     console.log('new user connected');  
     
     socket.on('join', (params, callback) =>{
-        if(!isRealString(params.name) || !isRealString(params.room)){
-            return callback('name and room name are required')
-        }
+        const room = params.room.toUpperCase();
 
-        socket.join(params.room);
+        if(!isRealString(params.name) || !isRealString(room)){
+            return callback('name and room name are required')
+        }else if(users.getUserList(room).includes(params.name)){
+            return callback('this name is already used in this room, please use another name');
+        }
+        
+
+        socket.join(room);
 
         users.removeUser(socket.id);
-        users.addUser(socket.id, params.name,params.room);
+        users.addUser(socket.id, params.name,room);
 
-        io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+        io.to(room).emit('updateUserList', users.getUserList(room));
+        io.emit('updateActivatedRoom', users.getRoomList());
 
-        socket.emit('newMessage',generateMessage('Admin','Welcome to the chat app'))
-        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin',`${params.name} has joined`)) 
+        socket.emit('newMessage',generateMessage('Admin',`Welcome to Room ${room}`))
+        socket.broadcast.to(room).emit('newMessage', generateMessage('Admin',`${params.name} has joined`)) 
 
         callback();
     })
@@ -63,6 +69,9 @@ io.on('connection',(socket) => {
             io.to(user.room).emit('newMessage',generateMessage('Admin',`${user.name} has left the room`));
         }
     })
+
+    
+    socket.emit('updateActivatedRoom', users.getRoomList());
 });
 
 server.listen(port, () =>{
