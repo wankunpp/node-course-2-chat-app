@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
 router.post(
   "/",
   passport.authenticate("local", {
-    successRedirect: "/join-room",
+    successRedirect: "/room",
     failureRedirect: "/",
     failureFlash: true
   })
