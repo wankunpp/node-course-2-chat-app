@@ -1,8 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { isLoggedIn } = require("../middleware/isLoggedIn");
+const {passport} = require('../config/passport');
 
-router.get("/", isLoggedIn, (req, res) => {
+router.get("/", passport.authenticate('jwt', {
+  session: false,
+  failureRedirect: '/',
+  failureFlash: true
+}), (req, res) => {
   res.render("room");
 });
 

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const _ = require('lodash');
 
 const UserSchema = new mongoose.Schema({
   username: {
@@ -22,8 +23,15 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
+UserSchema.methods.toJSON = function(){
+  const user = this;
+  const userObjdect = user.toObject();
+
+  return _.pick(userObjdect,['_id','name','email']);
+}
+
 UserSchema.statics.findByUsername = function(username, password) {
-  var User = this;
+  const User = this;
 
   return User.findOne({ username }).then(user => {
     if (!user) return Promise.reject();

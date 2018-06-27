@@ -2,6 +2,7 @@ const express = require("express");
 const { User } = require("../models/user");
 const { mongoose } = require("../config/db/mongoose");
 const { passport } = require("../config/passport");
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
@@ -10,10 +11,15 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", passport.authenticate("local-signin", {
-    successRedirect: "/room",
     failureRedirect: "/",
     failureFlash: true
-  })
+  }),(req,res) =>{
+    const token = jwt.sign(req.user.toJSON(),'secret', {
+      expiresIn: 3600
+    })
+    res.cookie('jwt', token);
+    res.redirect('/room');
+  }
 );
 
 router.get("/register", (req, res) => {

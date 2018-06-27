@@ -1,5 +1,8 @@
 const passport = require("passport");
 const localStrategy = require("passport-local").Strategy;
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtracStrategy = require('passport-jwt').ExtractJwt;
+const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 
 const { User } = require("../models/user");
@@ -78,5 +81,22 @@ passport.use(
     );
   })
 );
+
+
+const opts=  {};
+opts.jwtFromRequest = function(req) {
+  let token = null;
+  if (req && req.cookies) token = req.cookies['jwt'];
+  return token;
+};
+opts.secretOrKey = 'secret';
+passport.use('jwt', new JwtStrategy(opts, (jwt_payload, done) =>{
+  User.findById(jwt_payload._id).then((user) =>{
+    if(user) {
+      return done(null, user);
+    }
+    return done(null, false,{message: 'Please login'});
+  }).catch(err => done(err));
+}))
 
 module.exports = { passport };
