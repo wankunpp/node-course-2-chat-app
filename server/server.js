@@ -1,3 +1,5 @@
+require('../config/main/config');
+
 const path = require("path");
 const http = require("http");
 const express = require("express");
@@ -18,7 +20,7 @@ const room = require("../routes/room");
 const chat = require("../routes/chat");
 
 const publicPath = path.join(__dirname, "..", "public");
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 //init app
 const app = express();

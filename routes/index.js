@@ -14,7 +14,7 @@ router.post("/", passport.authenticate("local-signin", {
     failureRedirect: "/",
     failureFlash: true
   }),(req,res) =>{
-    const token = jwt.sign(req.user.toJSON(),'secret', {
+    const token = jwt.sign(req.user.toJSON(), process.env.JWT_SECRET, {
       expiresIn: 3600
     })
     res.cookie('jwt', token);

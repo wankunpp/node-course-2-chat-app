@@ -89,7 +89,7 @@ opts.jwtFromRequest = function(req) {
   if (req && req.cookies) token = req.cookies['jwt'];
   return token;
 };
-opts.secretOrKey = 'secret';
+opts.secretOrKey = process.env.JWT_SECRET;
 passport.use('jwt', new JwtStrategy(opts, (jwt_payload, done) =>{
   User.findById(jwt_payload._id).then((user) =>{
     if(user) {
