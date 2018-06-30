@@ -19,7 +19,7 @@ const scollToBottom = () =>{
 socket.on('connect',() =>{
     const params = jQuery.deparam(window.location.search);
 
-    socket.emit('join', params, (err) =>{
+    socket.emit('join-room', params, (err) =>{
         if(err){
             alert(err);
             window.location.href = '/';
@@ -27,6 +27,10 @@ socket.on('connect',() =>{
             console.log('no error');
         }
     })
+})
+
+socket.on('renderRoomName', (roomName) =>{
+    $('#room__name').html(roomName);
 })
 
 socket.on('newMessage',(message) => {
@@ -53,14 +57,20 @@ socket.on('disconnect',() =>{
     console.log('Disconnected to server');
 })
 
-socket.on('updateUserList', (users) =>{
-    var ul = jQuery('<ol></ol>');
-
-    users.forEach((user) =>{
-        ul.append(jQuery('<li></li>').text(user))
+socket.on('updateUserList', (usernames) =>{
+    $('.room__users__list').empty();
+    usernames.forEach((username) =>{
+        $('.room__users__list').append(`
+            <li class="room__users__online">
+                <div class="d-flex justify-content-start align-items-center py-2">
+                    <img src="./files/IMG_3912.jpg" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
+                    <strong>${username}</strong>
+                    <label class="ml-auto">
+                        <i class="fa fa-circle" style="color:green"></i>
+                    </label>
+                </div>
+            </li>`);
     });
-
-    jQuery('#users').html(ul);
 })
 
 socket.on('newLocationMessage', (message) =>{

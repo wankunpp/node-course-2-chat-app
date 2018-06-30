@@ -17,7 +17,7 @@ const { Users } = require("./utils/users");
 
 const index = require("../routes/index");
 const home = require("../routes/home");
-const chat = require("../routes/chat");
+const roomChat = require("../routes/room-chat");
 
 const publicPath = path.join(__dirname, "..", "public");
 const port = process.env.PORT;
@@ -62,7 +62,7 @@ app.use((req, res, next) => {
 //use routes
 app.use("/", index);
 app.use("/home", home);
-app.use("/chat", chat);
+app.use("/room-chat", roomChat);
 
 //socket io
 const io = socketID(server);
@@ -86,7 +86,7 @@ io.on("connection", socket => {
     })
   })
 
-  socket.on("join", (params, callback) => {
+  socket.on("join-room", (params, callback) => {
     const room = params.room.toUpperCase();
 
     if (!isRealString(params.name) || !isRealString(room)) {
@@ -98,6 +98,8 @@ io.on("connection", socket => {
     }
 
     socket.join(room);
+
+    socket.emit('renderRoomName',room);
 
     users.removeUser(socket.id);
     users.addUser(socket.id, params.name, room);

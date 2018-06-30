@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link href="/css/libs/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+    <link href="/css/libs/webfonts/font-awesome.css" rel="stylesheet" >
+
+
+</head>
+<body>
+    <% include ./partials/navbar %>
+    <div class="row">
+        <div class="col-md-3">
+                <% include ./partials/sidebar %>
+        </div>
+        <div class="col-md-7">
+            <div class="chat__main  mx-3 py-2 ">
+                <h2 class="text-center" id="room__name">Room Name</h1>
+                <ol id="messages" class="chat__messages border box-shadow"></ol>
+        
+                <div class="chat__footer">
+                    <form id="message-form">
+                        <input name="message" type="text" placeholder="Message"/ autofocus autocomplete="off">
+                        <button>Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="online__users my-2 mx-2 text-center bg-white border">
+                <div class="roomusers__list__title">
+                    <i class="fa fa-users"></i> 
+                    <span>Room Users</span>
+                </div>
+                <ul class="room__users__list list-unstyled" >
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <script id="message-template" type="text/template">
+        <li class ="message">
+            <div class="message__title">
+                <h4>{{from}}</h4>
+                <span>{{createdAt}}</span>
+            </div>
+            <div class="message__body">
+                <p>{{text}}</p>
+            </div>
+        </li>
+    </script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/libs/jquery-3.3.1.min.js"></script>
+    <script src="/js/libs/moment.js"></script>
+    <script src ='js/libs/mustache.js'></script>
+    <script src ='js/libs/deparam.js'></script>
+    <script src="/js/room-chat.js"></script>
+    
+    
+</body>
+</html>
