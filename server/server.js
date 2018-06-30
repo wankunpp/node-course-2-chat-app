@@ -73,7 +73,7 @@ io.on("connection", socket => {
   console.log("new user connected");
 
   socket.on('newuser-login', (username) =>{
-   
+    io.emit('updateActivatedRoom', users.getRoomList());
 
     if(!users.hasUser(username)){
         users.removeUser(socket.id);
@@ -147,6 +147,7 @@ io.on("connection", socket => {
 
     if (user) {
       io.to(user.room).emit("updateUserList", users.getUserList(user.room));
+      io.emit('updateActivatedRoom', users.getRoomList());
       io.to(user.room).emit(
         "newMessage",
         generateMessage("Admin", `${user.name} has left the room`)
@@ -154,7 +155,6 @@ io.on("connection", socket => {
     }
   });
 
-  socket.emit("updateActivatedRoom", users.getRoomList());
 });
 
 server.listen(port, () => {

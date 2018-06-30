@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 class Users {
     constructor(){
         this.users = [];
@@ -42,8 +44,9 @@ class Users {
     }
 
     getRoomList(){
-        var rooms = this.users.map(user=> user.room);
-        var roomList = Array.from(new Set(rooms));
+        const user_in_room = this.users.filter(user => user.room);
+        const rooms = user_in_room.map(user=> user.room);
+        var roomList = _.uniq(rooms);
 
         return roomList;
     }
