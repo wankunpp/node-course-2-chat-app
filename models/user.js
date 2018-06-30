@@ -27,7 +27,7 @@ UserSchema.methods.toJSON = function(){
   const user = this;
   const userObjdect = user.toObject();
 
-  return _.pick(userObjdect,['_id','name','email']);
+  return _.pick(userObjdect,['_id','username','email']);
 }
 
 UserSchema.statics.findByUsername = function(username, password) {

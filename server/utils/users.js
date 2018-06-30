@@ -3,6 +3,12 @@ class Users {
         this.users = [];
     }
 
+    addUser(id,name) {
+        const user = {id, name};
+        this.users.push(user);
+        return user;
+    }
+
     addUser(id, name, room) {
         var user = {id, name, room};
         this.users.push(user);
@@ -12,6 +18,10 @@ class Users {
     getUser(id){
         var user = this.users.find(user => user.id === id);
         return user;
+    }
+
+    getUsers(){
+        return this.users.slice();
     }
 
     removeUser(id){
@@ -36,6 +46,12 @@ class Users {
         var roomList = Array.from(new Set(rooms));
 
         return roomList;
+    }
+
+    hasUser(username) {
+        const usernames = this.users.slice().map(user => user.name);
+        if(usernames.indexOf(username) === -1) return false;
+        return true;
     }
 }
 

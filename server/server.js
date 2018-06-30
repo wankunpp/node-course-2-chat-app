@@ -67,9 +67,24 @@ app.use("/chat", chat);
 //socket io
 const io = socketID(server);
 const users = new Users();
+const dbUsers = require('../models/user').User;
 
 io.on("connection", socket => {
   console.log("new user connected");
+
+  socket.on('newuser-login', (username) =>{
+   
+
+    if(!users.hasUser(username)){
+        users.removeUser(socket.id);
+        users.addUser(socket.id, username);
+    }
+    
+    const onlineUsers = users.getUsers();
+    dbUsers.find({}).then((allusers) =>{
+        io.emit('updateOnlineUsers',{allusers,onlineUsers});
+    })
+  })
 
   socket.on("join", (params, callback) => {
     const room = params.room.toUpperCase();
