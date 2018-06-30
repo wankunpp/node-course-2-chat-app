@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home | ChatApp</title>
+
+    <link href="/css/libs/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/libs/webfonts/font-awesome.css" rel="stylesheet" >
+    <link href="/css/styles.css" rel="stylesheet">
+    
+</head>
+<body>
+    <% include ./partials/navbar %>
+    <div class="row">
+        <div class="col-md-3">
+                <% include ./partials/sidebar  %>
+        </div>
+        <div class="col-md-7">
+            <div class="join__room my-2" >
+                <form id="join__room" action="/chat" method="GET">
+                    <div class="input-group mb-3">
+                        <input  name="name" value="<%= user.username %>" type="hidden">
+                        <input type="text" class="form-control" placeholder="Room Name" name="room">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary" id="join__room__button">Join</button>
+                        </div>
+                        </div>
+                </form>
+            </div>
+            <div class="room__list text-center ">
+                <h2>Activated Room List</h2>
+                <hr>
+                <div class= "row">
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="online__users my-2 mx-2 text-center bg-white border">
+                <div class="allusers__list__title">
+                        <i class="fas fa-users"></i> 
+                        <span>All Users</span>
+                    </div>
+                <ul class="online__users__list list-unstyled">
+
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/libs/jquery-3.3.1.min.js"></script>
+    <script src="js/libs/bootstrap.min.js"></script>
+    <script src="/js/home.js"></script>
+    
+    
+</body>
+</html>

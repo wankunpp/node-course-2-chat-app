@@ -18,7 +18,7 @@ router.post("/", passport.authenticate("local-signin", {
       expiresIn: 3600
     })
     res.cookie('jwt', token);
-    res.redirect('/room');
+    res.redirect('/home');
   }
 );
 

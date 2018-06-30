@@ -7,7 +7,7 @@ router.get("/", passport.authenticate('jwt', {
   failureRedirect: '/',
   failureFlash: true
 }), (req, res) => {
-  res.render("room");
+  res.render("home",{user: req.user});
 });
 
 module.exports = router;

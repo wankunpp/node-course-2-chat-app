@@ -1,0 +1,47 @@
+<div class="container profile mt-2">
+    <div class="card-deck mb-2 text-center">
+        <div class="card mb-4 box-shadow">
+            <div class="card-header">
+              <img class="card-img-top" src="./files/IMG_3912.jpg" alt="Generic placeholder image" height="180px">
+              <h4 class="my-1 font-weight-normal"> <%= user.username %></h4>
+            </div>
+            <div class="card-body">
+              <ul class="list-unstyled mt-1 mb-2">
+               
+              <button type="button" class="btn btn-sm btn-block btn-outline-primary">View Details</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container friends__list box-shadow mx-2 bg-light ">
+    
+        <div class="friends__list__title">
+            <span class="fa fa-users"></span> 
+            <span>My friends</span>
+        </div>
+        <div class="friends__list__friends">
+            <ul class="list-unstyled">
+                <li class="friends__online">
+                    <div class="d-flex justify-content-start align-items-center ">
+                        <img src="./files/IMG_3912.jpg" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
+                        <strong>Username</strong>
+                        <label class="ml-auto">
+                                <i class="fa fa-circle" style="color:green"></i>
+                        </label>
+                    </div>
+                </li>
+                <li class="friends__offline">
+                        <div class="d-flex justify-content-start align-items-center text-muted ">
+                            <img src="./files/IMG_3912.jpg" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
+                            <strong>Username2</strong>
+                            <label class="ml-auto">
+                                    <i class="fa fa-circle" style="color:grey"></i>
+                            </label>
+                        </div>
+                    </li>
+            </ul>
+        </div>
+   
+    
+</div>

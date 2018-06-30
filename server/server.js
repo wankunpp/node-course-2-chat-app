@@ -16,7 +16,7 @@ const { isRealString } = require("./utils/validation");
 const { Users } = require("./utils/users");
 
 const index = require("../routes/index");
-const room = require("../routes/room");
+const home = require("../routes/home");
 const chat = require("../routes/chat");
 
 const publicPath = path.join(__dirname, "..", "public");
@@ -61,7 +61,7 @@ app.use((req, res, next) => {
 
 //use routes
 app.use("/", index);
-app.use("/room", room);
+app.use("/home", home);
 app.use("/chat", chat);
 
 //socket io
