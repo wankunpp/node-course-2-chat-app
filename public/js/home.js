@@ -28,7 +28,7 @@ socket.on('updateActivatedRoom',(rooms) =>{
     $('.active_room button').on('click', function(){
         const text = $(this).attr('name');
         const index = text.indexOf('_');
-        const room = text.substring(index+1);
+        const room = text.substring(index+2);
        
         $('input[name="room"]').val(room);
         $('#join__room').submit();
