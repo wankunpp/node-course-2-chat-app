@@ -93,7 +93,7 @@ opts.secretOrKey = process.env.JWT_SECRET;
 passport.use('jwt', new JwtStrategy(opts, (jwt_payload, done) =>{
   User.findById(jwt_payload._id).then((user) =>{
     if(user) {
-      return done(null, user);
+      return done(null, user.toJSON());
     }
     return done(null, false,{message: 'Please login'});
   }).catch(err => done(err));
