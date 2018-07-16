@@ -3,7 +3,7 @@ require('../config/main/config');
 const path = require("path");
 const http = require("http");
 const express = require("express");
-const socketID = require("socket.io");
+const sockets = require('./socket');
 const ejs = require("ejs");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -65,99 +65,7 @@ app.use("/home", home);
 app.use("/room-chat", roomChat);
 
 //socket io
-const io = socketID(server);
-const users = new Users();
-const dbUsers = require('../models/user').User;
-
-io.on("connection", socket => {
-  console.log("new user connected");
-
-  socket.on('newuser-login', (username) =>{
-    io.emit('updateActivatedRoom', users.getRoomList());
-
-    if(!users.hasUser(username)){
-        users.removeUser(socket.id);
-        users.addUser(socket.id, username);
-    }
-    
-    const onlineUsers = users.getUsers();
-    dbUsers.find({}).then((allusers) =>{
-        io.emit('updateOnlineUsers',{allusers,onlineUsers});
-    })
-  })
-
-  socket.on("join-room", (params, callback) => {
-    const room = params.room.toUpperCase();
-
-    if (!isRealString(params.name) || !isRealString(room)) {
-      return callback("name and room name are required");
-    } else if (users.getUserList(room).includes(params.name)) {
-      return callback(
-        "this name is already used in this room, please use another name"
-      );
-    }
-
-    socket.join(room);
-
-    socket.emit('renderRoomName',room);
-
-    users.removeUser(socket.id);
-    users.addUser(socket.id, params.name, room);
-
-    io.to(room).emit("updateUserList", users.getUserList(room));
-    io.emit("updateActivatedRoom", users.getRoomList());
-
-    socket.emit(
-      "newMessage",
-      generateMessage("Admin", `Welcome to Room ${room}`)
-    );
-    socket.broadcast
-      .to(room)
-      .emit(
-        "newMessage",
-        generateMessage("Admin", `${params.name} has joined`)
-      );
-
-    callback();
-  });
-
-  socket.on("createMessage", (message, callback) => {
-    callback();
-    const user = users.getUser(socket.id);
-
-    if (user && isRealString(message.text)) {
-      socket.emit("newMessage", generateMessage("Me", message.text));
-      socket.broadcast
-        .to(user.room)
-        .emit("newMessage", generateMessage(user.name, message.text));
-    }
-  });
-
-  socket.on("createLocationMessage", coords => {
-    const user = users.getUser(socket.id);
-
-    if (user) {
-      io.to(user.room).emit(
-        "newLocationMessage",
-        generateLocaitonMessage(user.name, coords.latitude, coords.longtitude)
-      );
-    }
-  });
-
-  socket.on("disconnect", () => {
-    const user = users.removeUser(socket.id);
-
-    if (user) {
-      io.to(user.room).emit("updateUserList", users.getUserList(user.room));
-      io.emit('updateActivatedRoom', users.getRoomList());
-      io.to(user.room).emit(
-        "newMessage",
-        generateMessage("Admin", `${user.name} has left the room`)
-      );
-    }
-  });
-
-});
+sockets.init(server);
 
 server.listen(port, () => {
   console.log(`Started up at port ${port}`);
