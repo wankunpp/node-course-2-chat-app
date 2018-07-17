@@ -26,6 +26,33 @@ sockets.init = function (server){
         dbUsers.find({}).then((dbusers) =>{
             io.emit('updateOnlineUsers',{dbusers,onlineUsers});
         })
+
+        //render friend requests
+        dbUsers.findOne({username: username})
+            .populate('friendRequest.from')
+            .then(user =>{
+                socket.emit('renderRequest', user.friendRequest);
+            })
+    })
+
+     //send friend requests
+     socket.on('sendFriendRequest',({userId,friendId}) =>{
+        dbUsers.findById(friendId).then(user =>{
+            if(user.friendRequest.length === 0 || !user.friendRequest.map(request =>request.from.toString()).includes(userId)){
+                user.friendRequest.push({from: userId});
+                user.save().then(friend => {
+                    //if the user who got the request is online , should see the request immediately
+                    const requestOnline = users.users.find(ele=> ele.name = user.username);
+                    if(requestOnline != undefined){
+                        dbUsers.findById(friend._id)
+                        .populate('friendRequest.from')
+                        .then(user =>{
+                            socket.to(requestOnline.id).emit('renderRequest', user.friendRequest);
+                        })
+                    }
+                })
+            }
+        })
     })
 
     socket.on("join-room", (params, callback) => {
@@ -49,16 +76,8 @@ sockets.init = function (server){
         io.to(room).emit("updateUserList", users.getUserList(room));
         io.emit("updateActivatedRoom", users.getRoomList());
 
-        socket.emit(
-        "newMessage",
-        generateMessage("Admin", `Welcome to Room ${room}`)
-        );
-        socket.broadcast
-        .to(room)
-        .emit(
-            "newMessage",
-            generateMessage("Admin", `${params.name} has joined`)
-        );
+        socket.emit("newMessage",generateMessage("Admin", `Welcome to Room ${room}`));
+        socket.broadcast.to(room).emit("newMessage",generateMessage("Admin", `${params.name} has joined`));
 
         callback();
     });

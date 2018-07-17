@@ -2,9 +2,45 @@
     <h5 class="my-0 ml-5 mr-md-auto font-weight-normal text-dark">Chat App</h5>
     <nav class="my-2 my-md-0 mr-md-3">
       <a class="p-4 text-dark" href="/home">Home</a>
-      <a class="p-4 text-dark" href="#">friend request</a>
+      <a class="p-4 text-dark dropdown-toggle" data-toggle="dropdown" id="request__amount"><i class="fa fa-user-friends fa-lg"></i></a>
+      <ul class="dropdown-menu py-1" id="request__dropdown" style="width:300px; position:relative;">
+        <h4>Friend Requests</h3>
+        <hr>
+        <% if(user.friendRequest.length === 0) {%>
+          <p>No friend request</p>
+          <% } %>
+      </ul>
       <a class="p-4 text-dark" href="#">messages</a>
       
     </nav>
     <a class="btn btn-outline-primary" href="#">logout</a>
   </div>
+
+  <script>
+    function renderRequest(requests){
+      if(requests.length >0){
+        $('#request__amount').append(`
+         <span class="badge badge-danger">${requests.length}</span>
+        `)
+        $('#request__dropdown').empty();
+        $('#request__dropdown').append('<h4>Friend Requests</h4><hr>')
+        requests.forEach(request => {
+          $('#request__dropdown').append(`
+            <li class="my-1">
+              <div class="row" >
+                <div class="col-md-6">
+                  <img class="img-responsive" src="${request.userImage}" style="width:50px; height:50px">
+                  <span>${request.username}</span>
+                </div>
+                <div class="col-md-6">
+                  <button class="btn btn-sm btn-success" id="confirm__request__${request._id}">Confirm</button>
+                  <button class="btn btn-sm btn-danger" id="decline__request__${request._id}">Deline</button>
+                </div>
+              </div>
+              <hr>
+            </li>
+          `)
+        })
+      }
+    }
+  </script>

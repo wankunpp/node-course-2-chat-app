@@ -93,7 +93,7 @@ socket.on('updateOnlineUsers',({dbusers,onlineUsers}) =>{
         //if slected user is logged user itself, nothing show
         if(!$(this).attr('id').includes(userId)){
             $(this).find('.user__icons').css({display:'block'});
-            //if the selected user is firend of the logged user , render delete user icon
+            //if the selected user is firend of the logged user , hide the button 
             if(friendsList.indexOf($(this).attr('id').substring(6)) >=0){
                 $(this).find('.user__icons button:nth-child(3)').css({display:'none'});
             }
@@ -102,6 +102,25 @@ socket.on('updateOnlineUsers',({dbusers,onlineUsers}) =>{
         $(this).find('.user__icons').css({display:'none'})
     })
 
+    $('.user__icons button:nth-child(3)').on('click', function() {
+        const friendId = $(this).attr('id').substring(11);
+        socket.emit('sendFriendRequest',{userId,friendId});
+    })
+})
+
+socket.on('renderRequest', (friendRequests) =>{
+    const requests = friendRequests.map(friendRequest => friendRequest.from);
+    renderRequest(requests);
+
+    $('#request__dropdown li button').on('click', function(){
+        const friendId = $(this).attr('id').substring(18);
+        if($(this).attr('id').includes('confirm')){
+            socket.emit('confirmRequest', {userId, friendId});
+        }else{
+           socket.emit('declineRequest',{userId, friendId});
+        }
+        $(this).closest('li').remove();
+    })
 })
 
  
