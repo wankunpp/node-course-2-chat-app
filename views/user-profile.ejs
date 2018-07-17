@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Profile | Chat App</title>
+
+    <link href="/css/libs/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/libs/webfonts/font-awesome.css" rel="stylesheet" >
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <% include ./partials/navbar %>
+    <div class="row">
+        <div class="col-md-3">
+                <% include ./partials/sidebar  %>
+        </div>
+        <div class="col-md-9">
+            <form id="user__profile__form" action="/user-profile/me" method="POST" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="user__profile__header mx-2 mt-2">
+                            <h2 class="text-center"><%= typeof viewUser == 'undefined'?'My Profile' : viewUser.username+'  profile' %></h2>
+                            <div class="d-flex">
+                                <div class="align-self-end ml-auto">
+                                    <% if(typeof viewUser == 'undefined' ) { %>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" id="profile__edit__button"><i class="fa fa-edit"></i>Edit</button>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="user__profile__form my-2">
+                            <div class="d-flex">
+                                <div class="p-2 form__label">
+                                    <label for="form__firstName">First Name:</label>
+                                </div>
+                                <div class="p-2 ml-5 flex-grow-1 form__info " id="form__firstName">
+                                        <label> <%= typeof viewUser == 'undefined'?user.firstName : viewUser.firstName %></label>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="p-2 form__label">
+                                    <label for="form__lastName">Last name:</label>
+                                </div>
+                                <div class="p-2 ml-5 flex-grow-1 form__info" id="form__lastName">
+                                        <label> <%= typeof viewUser == 'undefined'?user.lastName : viewUser.lastName %></label>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-center user__profile__button my-5 ">
+                                <button type="submit" class="btn btn-success mx-3" style="display: none">Save</button>
+                                <button type="button" class="btn btn-danger mx-3" style="display: none">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="user__profile__image my-3  mx-3 text-center">
+                            <img src="<%= typeof viewUser == 'undefined'?user.userImage : viewUser.userImage %>" id="user__profile__image"  height="280px" width="100%" class="img-responsive">
+                        </div>
+                        <% if(typeof msg != 'undefined') { %>
+                                <p class="text-danger text-center"> <%= msg %></p>
+                        <% } %>
+                        <div class="d-flex justify-content-center upload__image__button">
+                            <button type="submit" class="btn btn-outline-secondary" id="profile__image__button" style="display: none"><i class="fa fa-upload"></i>Upload Image</button>
+                            <input type="file" name="form__image" id="form__image__upload" accept="jpg, .jpeg, .png">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/libs/jquery-3.3.1.min.js"></script>
+    <script src="/js/libs/bootstrap.min.js"></script>
+    <script src ="/js/user-profile.js"></script>
+    
+    
+    
+</body>
+</html>

@@ -136,3 +136,42 @@
     margin-right: 0px;
   }
 }
+
+/* user profile */
+.user__profile__image {
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.form__label{
+  width: 150px;
+}
+
+.form__label label{
+  font: 22px bold;
+}
+
+.form__info{
+  border-bottom: 1px solid lightgray;
+}
+
+.form__info label{
+  font-family: sans-serif;
+  font-size: 18px;
+  font-style: italic
+}
+
+.upload__image__button {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  
+} 
+
+.upload__image__button input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}

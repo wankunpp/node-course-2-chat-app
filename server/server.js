@@ -18,6 +18,7 @@ const { Users } = require("./utils/users");
 const index = require("../routes/index");
 const home = require("../routes/home");
 const roomChat = require("../routes/room-chat");
+const userProfile = require("../routes/user-profile");
 
 const publicPath = path.join(__dirname, "..", "public");
 const port = process.env.PORT;
@@ -63,6 +64,7 @@ app.use((req, res, next) => {
 app.use("/", index);
 app.use("/home", home);
 app.use("/room-chat", roomChat);
+app.use("/user-profile", userProfile);
 
 //socket io
 sockets.init(server);

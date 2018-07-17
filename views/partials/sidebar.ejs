@@ -2,13 +2,13 @@
     <div class="card-deck mb-2 text-center">
         <div class="card mb-4 box-shadow">
             <div class="card-header">
-              <img class="card-img-top" src="./files/IMG_3912.jpg" alt="Generic placeholder image" height="180px">
+              <img class="card-img-top"src="<%= user.userImage %>" alt="Generic placeholder image" height="180px">
               <h4 class="my-1 font-weight-normal"> <%= user.username %></h4>
             </div>
             <div class="card-body">
               <ul class="list-unstyled mt-1 mb-2">
                
-              <button type="button" class="btn btn-sm btn-block btn-outline-primary">User Profile</button>
+              <button type="button" class="btn btn-sm btn-block btn-outline-primary" onclick="location.href='/user-profile/me'">User Profile</button>
             </div>
         </div>
     </div>
