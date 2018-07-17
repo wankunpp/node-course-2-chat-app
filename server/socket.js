@@ -23,8 +23,8 @@ sockets.init = function (server){
         }
         
         const onlineUsers = users.getUsers();
-        dbUsers.find({}).then((allusers) =>{
-            io.emit('updateOnlineUsers',{allusers,onlineUsers});
+        dbUsers.find({}).then((dbusers) =>{
+            io.emit('updateOnlineUsers',{dbusers,onlineUsers});
         })
     })
 
@@ -85,6 +85,11 @@ sockets.init = function (server){
             "newMessage",
             generateMessage("Admin", `${user.name} has left the room`)
         );
+
+        const onlineUsers = users.getUsers();
+        dbUsers.find({}).then((dbusers) =>{
+            io.emit('updateOnlineUsers',{dbusers,onlineUsers});
+        })
         }
     });
     });

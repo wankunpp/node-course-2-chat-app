@@ -20,29 +20,37 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 6
-  }
+  },
+  firstName:{
+    type: String,
+    default:'-'
+  },
+  lastName: {
+    type: String,
+    default: '-'
+  },
+  userImage: {
+    type: String,
+    default: '/files/default-avatar.jpg'
+  },
+  friendsList: [
+    {
+    friendId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
+    }
+  ],
+  friendRequest:[
+    {
+      from:{type:mongoose.SchemaTypes.ObjectId, ref:'User'}
+    }
+  ]
 });
 
 UserSchema.methods.toJSON = function(){
   const user = this;
-  const userObjdect = user.toObject();
+  const userObject = user.toObject();
 
-  return _.pick(userObjdect,['_id','username','email']);
+  return _.omit(userObject,['password']);
 }
-
-UserSchema.statics.findByUsername = function(username, password) {
-  const User = this;
-
-  return User.findOne({ username }).then(user => {
-    if (!user) return Promise.reject();
-    return new Promise((resolve, reject) => {
-      bcrypt.compare(password, user.password, (err, res) => {
-        if (res) resolve(user);
-        reject(err);
-      });
-    });
-  });
-};
 
 UserSchema.pre("save", function(next) {
   const user = this;

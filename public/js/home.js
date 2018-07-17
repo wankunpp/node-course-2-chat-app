@@ -35,42 +35,71 @@ socket.on('updateActivatedRoom',(rooms) =>{
     }) 
 })
 
-socket.on('updateOnlineUsers',(users) =>{
-    const allUsers = users.allusers;
-    const onlineUsers = users.onlineUsers.map(user => user.name);
-    const offlineUsers = allUsers.filter((user) =>{
-       if(onlineUsers.indexOf(user.username) === -1){
-           return true;
-       }
-       return false;
+socket.on('updateOnlineUsers',({dbusers,onlineUsers}) =>{
+    const online_users =[];
+    const offline_users =[];
+    
+    dbusers.forEach(user => {
+        if(onlineUsers.map(user => user.name).includes(user.username)){
+            online_users.push(user);
+        }else{
+            offline_users.push(user);
+        }
     })
-    console.log(offlineUsers);
+    
     $('.online__users__list').empty();
 
-    onlineUsers.forEach(user => {
-        $('.online__users__list').append(`
-        <li class="allusers__online">
-            <div class="d-flex justify-content-start align-items-center py-2">
-                <img src="./files/IMG_3912.jpg" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
-                <strong>${user}</strong>
-                <label class="ml-auto">
-                    <i class="fa fa-circle" style="color:green"></i>
-                </label>
-            </div>
-        </li>`)
-    });
-    
-    offlineUsers.forEach(user => {
-        $('.online__users__list').append(`
-        <li class="allusers__offline">
-            <div class="d-flex justify-content-start align-items-center text-muted py-2">
-                <img src="./files/IMG_3912.jpg" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
-                <strong>${user.username}</strong>
-                <label class="ml-auto">
-                    <i class="fa fa-circle" style="color:grey"></i>
-                </label>
-            </div>
-        </li>`)
+    if(online_users.length > 0){
+        online_users.forEach(user => {
+            $('.online__users__list').append(`
+            <li class="allusers__online" id="user__${user._id}">
+                <div class="d-flex justify-content-start align-items-center py-2">
+                    <img src="${user.userImage}" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
+                    <strong>${user.username}</strong>
+                    <label class="ml-auto">
+                        <i class="fa fa-circle" style="color:green"></i>
+                    </label>
+                </div>
+                <div class="user__icons" style="display: none">
+                    <button class="mx-2 btn btn-sm btn-outline-secondary" id="view__${user._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-eye"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-primary" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-comments"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-success" id="addFriend__${user._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-user-plus"></i></button>
+                </div>
+            </li>`)
+        });
+    }
+
+    if(offline_users.length>0){
+        offline_users.forEach(user => {
+            $('.online__users__list').append(`
+            <li class="allusers__offline"  id="user__${user._id}">
+                <div class="d-flex justify-content-start align-items-center text-muted py-2">
+                    <img src="${user.userImage}" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
+                    <strong>${user.username}</strong>
+                    <label class="ml-auto">
+                        <i class="fa fa-circle" style="color:grey"></i>
+                    </label>
+                </div>
+                <div class="user__icons" style="display: none">
+                    <button class="mx-2 btn btn-sm btn-outline-secondary" id="view__${user._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-eye"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-primary" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-comments"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-success" id="addFriend__${user._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-user-plus"></i></button>
+                </div>
+            </li>`)
+        })
+    }
+
+    $('.online__users__list li').hover(function(){
+        //if slected user is logged user itself, nothing show
+        if(!$(this).attr('id').includes(userId)){
+            $(this).find('.user__icons').css({display:'block'});
+            //if the selected user is firend of the logged user , render delete user icon
+            if(friendsList.indexOf($(this).attr('id').substring(6)) >=0){
+                $(this).find('.user__icons button:nth-child(3)').css({display:'none'});
+            }
+        }
+    }, function(){
+        $(this).find('.user__icons').css({display:'none'})
     })
 })
 
