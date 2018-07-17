@@ -79,7 +79,7 @@ router.get("/:userId", passport.authenticate('jwt',{
 }),(req,res) => {
   const userId = req.params.userId;
   User.findById(userId).then(viewUser =>{
-  res.render('use-profile', {user: req.user, viewUser: viewUser})
+  res.render('user-profile', {user: req.user, viewUser: viewUser})
   });
 })
 

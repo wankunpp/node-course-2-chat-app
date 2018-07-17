@@ -61,7 +61,7 @@ socket.on('updateOnlineUsers',({dbusers,onlineUsers}) =>{
                     </label>
                 </div>
                 <div class="user__icons" style="display: none">
-                    <button class="mx-2 btn btn-sm btn-outline-secondary" id="view__${user._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-eye"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-secondary" id="view__${user._id}" style="padding-left: 10px; padding-right: 10px;" onclick="location.href='/user-profile/${user._id}'"><i class="fa fa-eye"></i></button>
                     <button class="mx-2 btn btn-sm btn-outline-primary" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-comments"></i></button>
                     <button class="mx-2 btn btn-sm btn-outline-success" id="addFriend__${user._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-user-plus"></i></button>
                 </div>
@@ -81,7 +81,7 @@ socket.on('updateOnlineUsers',({dbusers,onlineUsers}) =>{
                     </label>
                 </div>
                 <div class="user__icons" style="display: none">
-                    <button class="mx-2 btn btn-sm btn-outline-secondary" id="view__${user._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-eye"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-secondary" id="view__${user._id}" style="padding-left: 10px; padding-right: 10px;" onclick="location.href='/user-profile/${user._id}'"><i class="fa fa-eye"></i></button>
                     <button class="mx-2 btn btn-sm btn-outline-primary" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-comments"></i></button>
                     <button class="mx-2 btn btn-sm btn-outline-success" id="addFriend__${user._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-user-plus"></i></button>
                 </div>
@@ -101,6 +101,7 @@ socket.on('updateOnlineUsers',({dbusers,onlineUsers}) =>{
     }, function(){
         $(this).find('.user__icons').css({display:'none'})
     })
+
 })
 
  
