@@ -119,6 +119,8 @@ socket.on('renderRequest', (friendRequests) =>{
         }else{
            socket.emit('declineRequest',{userId, friendId});
         }
+        const amount = parseInt($('#request__amount span').text())-1;
+        $('#request__amount span').text(amount);
         $(this).closest('li').remove();
     })
 })

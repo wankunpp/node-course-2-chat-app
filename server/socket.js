@@ -38,7 +38,7 @@ sockets.init = function (server){
      //send friend requests
      socket.on('sendFriendRequest',({userId,friendId}) =>{
         dbUsers.findById(friendId).then(user =>{
-            if(user.friendRequest.length === 0 || !user.friendRequest.map(request =>request.from.toString()).includes(userId)){
+            if((user.friendRequest.length === 0 || !user.friendRequest.map(request =>request.from.toString()).includes(userId)) && !user.friendsList.map(friend => friend.friendId.toString()).includes(userId)){
                 user.friendRequest.push({from: userId});
                 user.save().then(friend => {
                     //if the user who got the request is online , should see the request immediately
@@ -53,6 +53,24 @@ sockets.init = function (server){
                 })
             }
         })
+    })
+
+    //user confirm friend request
+    socket.on('confirmRequest',({userId,friendId}) =>{
+        dbUsers.findByIdAndUpdate(userId,{
+            $push:{friendsList: {friendId: friendId}},
+            $pull: {friendRequest: {from: friendId}}
+        }).then(user => user.save());
+
+       dbUsers.findByIdAndUpdate(friendId,{
+           $push:{friendsList:{friendId: userId}}
+       }).then(user => user.save());
+    })
+    //user decline friend request
+    socket.on('declineRequest',({userId, friendId}) => {
+        dbUsers.findByIdAndUpdate(userId, {
+            $pull:{friendRequest:{from: friendId}}
+        }).then(user => user.save());
     })
 
     socket.on("join-room", (params, callback) => {

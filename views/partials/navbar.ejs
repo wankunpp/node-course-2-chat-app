@@ -19,6 +19,7 @@
   <script>
     function renderRequest(requests){
       if(requests.length >0){
+        $('#request__amount span').remove();
         $('#request__amount').append(`
          <span class="badge badge-danger">${requests.length}</span>
         `)
