@@ -125,4 +125,3 @@ socket.on('renderRequest', (friendRequests) =>{
     })
 })
 
- 

@@ -38,6 +38,7 @@ sockets.init = function (server){
      //send friend requests
      socket.on('sendFriendRequest',({userId,friendId}) =>{
         dbUsers.findById(friendId).then(user =>{
+            //only if the two users are not friend and the user nerver get the same request before will the new request be sent
             if((user.friendRequest.length === 0 || !user.friendRequest.map(request =>request.from.toString()).includes(userId)) && !user.friendsList.map(friend => friend.friendId.toString()).includes(userId)){
                 user.friendRequest.push({from: userId});
                 user.save().then(friend => {
@@ -63,8 +64,18 @@ sockets.init = function (server){
         }).then(user => user.save());
 
        dbUsers.findByIdAndUpdate(friendId,{
-           $push:{friendsList:{friendId: userId}}
-       }).then(user => user.save());
+           $push:{friendsList:{friendId: userId}},
+           $pull: {friendRequest:{from: userId}}
+       }).then(user => {
+            const requestOnline = users.users.find(ele => ele.name = user.username);
+            if(requestOnline != undefined){
+                dbUsers.findById(user._id)
+                .populate('friendRequest.from')
+                .then(friend =>{
+                    socket.to(requestOnline.id).emit('renderRequest', friend.friendRequest);
+                })
+            }
+       });
     })
     //user decline friend request
     socket.on('declineRequest',({userId, friendId}) => {

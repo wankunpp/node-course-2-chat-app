@@ -18,13 +18,13 @@
 
   <script>
     function renderRequest(requests){
+      $('#request__amount span').remove();
+      $('#request__dropdown').empty();
+      $('#request__dropdown').append('<h4>Friend Requests</h4><hr>')
       if(requests.length >0){
-        $('#request__amount span').remove();
         $('#request__amount').append(`
          <span class="badge badge-danger">${requests.length}</span>
         `)
-        $('#request__dropdown').empty();
-        $('#request__dropdown').append('<h4>Friend Requests</h4><hr>')
         requests.forEach(request => {
           $('#request__dropdown').append(`
             <li class="my-1">
