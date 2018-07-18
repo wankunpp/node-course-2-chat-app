@@ -4,11 +4,7 @@
       <a class="p-4 text-dark" href="/home">Home</a>
       <a class="p-4 text-dark dropdown-toggle" data-toggle="dropdown" id="request__amount"><i class="fa fa-user-friends fa-lg"></i></a>
       <ul class="dropdown-menu py-1" id="request__dropdown" style="width:300px; position:relative;">
-        <h4>Friend Requests</h3>
-        <hr>
-        <% if(user.friendRequest.length === 0) {%>
-          <p>No friend request</p>
-          <% } %>
+        
       </ul>
       <a class="p-4 text-dark" href="#">messages</a>
       
@@ -21,7 +17,9 @@
       $('#request__amount span').remove();
       $('#request__dropdown').empty();
       $('#request__dropdown').append('<h4>Friend Requests</h4><hr>')
-      if(requests.length >0){
+      if(requests.length === 0){
+        $('#request__dropdown').append('<p>No friend request</p>')
+      }else{
         $('#request__amount').append(`
          <span class="badge badge-danger">${requests.length}</span>
         `)

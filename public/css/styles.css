@@ -28,6 +28,14 @@
   filter: grayscale(100%);
 }
 
+.friends__online i{
+  color: green;
+}
+
+.friends__offline i{
+  color:grey;
+}
+
 /* all users list */
 .online__users{
   min-height: 85vh;

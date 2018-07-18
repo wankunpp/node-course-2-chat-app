@@ -27,14 +27,25 @@ sockets.init = function (server){
             io.emit('updateOnlineUsers',{dbusers,onlineUsers});
         })
 
-        //render friend requests
+        //render friend requests and friends list
         dbUsers.findOne({username: username})
             .populate('friendRequest.from')
+            .populate('friendsList.friendId')
             .then(user =>{
                 socket.emit('renderRequest', user.friendRequest);
+                const userFriends = user.friendsList.map(friend => friend.friendId);
+                socket.emit('renderFriendsList',{userFriends,onlineUsers});
+                //if user's friend back online , should render the user's friend list
+                userFriends.forEach(friend => {
+                    const friendOnline = onlineUsers.find(user=> user.name === friend.username)
+                    if(friendOnline != undefined){
+                        socket.to(friendOnline.id).emit('renderFriendBackOnline',user);
+                    }
+                })
             })
-    })
 
+    })
+    
      //send friend requests
      socket.on('sendFriendRequest',({userId,friendId}) =>{
         dbUsers.findById(friendId).then(user =>{
@@ -43,7 +54,7 @@ sockets.init = function (server){
                 user.friendRequest.push({from: userId});
                 user.save().then(friend => {
                     //if the user who got the request is online , should see the request immediately
-                    const requestOnline = users.users.find(ele=> ele.name = user.username);
+                    const requestOnline = users.getUsers().find(ele=> ele.name = friend.username);
                     if(requestOnline != undefined){
                         dbUsers.findById(friend._id)
                         .populate('friendRequest.from')
@@ -56,23 +67,34 @@ sockets.init = function (server){
         })
     })
 
-    //user confirm friend request
+    //user confirm friend request, both user and this friend will remove the friend request 
     socket.on('confirmRequest',({userId,friendId}) =>{
+        const onlineUsers = users.getUsers().map(ele=> ele.name);
         dbUsers.findByIdAndUpdate(userId,{
             $push:{friendsList: {friendId: friendId}},
             $pull: {friendRequest: {from: friendId}}
-        }).then(user => user.save());
-
+        }).then(user => {
+            //render new friend to user's friendList
+            dbUsers.findById(friendId).then(friend =>{
+                socket.emit('renderNewFriend',{onlineUsers,friend});
+            })
+        });
+ 
        dbUsers.findByIdAndUpdate(friendId,{
            $push:{friendsList:{friendId: userId}},
            $pull: {friendRequest:{from: userId}}
-       }).then(user => {
-            const requestOnline = users.users.find(ele => ele.name = user.username);
+       }).then(friend => {
+            const requestOnline = users.users.find(ele => ele.name = friend.username);
+            //the friend should not see the request from the user if the user has confirmed the request from him and render the user to his friendList
             if(requestOnline != undefined){
-                dbUsers.findById(user._id)
+                dbUsers.findById(friend._id)
                 .populate('friendRequest.from')
                 .then(friend =>{
                     socket.to(requestOnline.id).emit('renderRequest', friend.friendRequest);
+                });
+
+                dbUsers.findById(userId).then(friend =>{
+                    socket.to(requestOnline.id).emit('renderNewFriend',{onlineUsers,friend});
                 })
             }
        });

@@ -125,3 +125,14 @@ socket.on('renderRequest', (friendRequests) =>{
     })
 })
 
+socket.on('renderFriendsList',({userFriends, onlineUsers}) =>{
+    renderFriendsList(userFriends, onlineUsers)
+})
+
+socket.on('renderFriendBackOnline',(friend) =>{
+    friendBackToOnline(friend);
+})
+
+socket.on('renderNewFriend',({onlineUsers,friend}) =>{
+    renderNewFriend(onlineUsers, friend);
+});

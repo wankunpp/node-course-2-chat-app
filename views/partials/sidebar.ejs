@@ -22,24 +22,7 @@
         </div>
         <div class="friends__list__friends">
             <ul class="list-unstyled">
-                <li class="friends__online">
-                    <div class="d-flex justify-content-start align-items-center ">
-                        <img src="./files/IMG_3912.jpg" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
-                        <strong>Username</strong>
-                        <label class="ml-auto">
-                                <i class="fa fa-circle" style="color:green"></i>
-                        </label>
-                    </div>
-                </li>
-                <li class="friends__offline">
-                        <div class="d-flex justify-content-start align-items-center text-muted ">
-                            <img src="./files/IMG_3912.jpg" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
-                            <strong>Username2</strong>
-                            <label class="ml-auto">
-                                    <i class="fa fa-circle" style="color:grey"></i>
-                            </label>
-                        </div>
-                    </li>
+                
             </ul>
         </div>
 </div>
@@ -48,69 +31,64 @@
     const userId = '<%= user._id %>';
     const userName = '<%= user.username %>'
 
-    let friendsList = [];
-    <% if(user.friendsList.length >0 ) { %>
-        <% user.friendsList.forEach(function(friend) { %>
-            friendsList.push('<%= friend.friendId %>')
-        <% }); %>
-    <% } %>
-
-    function renderFriendsList(onlineUsersNames, userFriends){
-        let onlineFriends = [];
-        let offlineFriends = [];
-        
+    function renderFriendsList(userFriends, onlineUsers){
         if(userFriends.length > 0){
+            $('.friends__list__friends ul').empty();
             userFriends.forEach(friend => {
-                if(onlineUsersNames.indexOf(friend.username) >= 0){
-                    onlineFriends.push(friend);
-                }else if( onlineUsersNames.indexOf(friend.username) === -1){
-                    offlineFriends.push(friend);
+                $('.friends__list__friends ul').append(`
+                        <li id="friend__${friend.username}">
+                            <div class="d-flex justify-content-start align-items-center ">
+                                <img src="${friend.userImage}" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
+                                <strong>${friend.username}</strong>
+                                <label class="ml-auto">
+                                        <i class="fa fa-circle" ></i>
+                                </label>
+                            </div>
+                            <div class="user__icons" style="display: none">
+                                <button class="mx-2 btn btn-sm btn-outline-secondary" id="viewFriend__${friend._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-eye"></i></button>
+                                <button class="mx-2 btn btn-sm btn-outline-primary" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-comments"></i></button>
+                                <button class="mx-2 btn btn-sm btn-outline-danger" id="deleteFriend__${friend._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-user-times style="red"></i></button>
+                            </div>
+                        </li>
+                `);
+
+                if(onlineUsers.find(user => user.name === friend.username) != undefined){
+                    $(`#friend__${friend.username}`).addClass('friends__online');
+                    $('.friends__list__friends ul').prepend($(`#friend__${friend.username}`));
+                }else{
+                    $(`#friend__${friend.username}`).addClass('friends__offline');
                 }
             })
         }
 
-        $('.friends__list__friends ul').empty();
-        
-        if(onlineFriends.length > 0){
-            onlineFriends.forEach(onlineFriend => {
-                $('.friends__list__friends ul').append(`
-                        <li id="friend__${onlineFriend.username}" class="friends__online">
-                            <div class="d-flex justify-content-start align-items-center ">
-                                <img src="${onlineFriend.userImage}" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
-                                <strong>${onlineFriend.username}</strong>
-                                <label class="ml-auto">
-                                        <i class="fa fa-circle" style="color:green"></i>
-                                </label>
-                            </div>
-                            <div class="user__icons" style="display: none">
-                                <button class="mx-2 btn btn-sm btn-outline-secondary" id="viewFriend__${onlineFriend._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-eye"></i></button>
-                                <button class="mx-2 btn btn-sm btn-outline-primary" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-comments"></i></button>
-                                <button class="mx-2 btn btn-sm btn-outline-danger" id="deleteFriend__${onlineFriend._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-user-times style="red"></i></button>
-                            </div>
-                        </li>
-                `);
-            })
-        }
-        
-        if(offlineFriends.length > 0){
-            offlineFriends.forEach(offlineFriend => {
-                $('.friends__list__friends ul').append(`
-                        <li id="friend__${offlineFriend.username}" class="friends__offline">
-                            <div class="d-flex justify-content-start align-items-center ">
-                                <img src="${offlineFriend.userImage}" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
-                                <strong>${offlineFriend.username}</strong>
-                                <label class="ml-auto">
-                                        <i class="fa fa-circle" style="color:grey"></i>
-                                </label>
-                            </div>
-                            <div class="user__icons" style="display: none">
-                                <button class="mx-2 btn btn-sm btn-outline-secondary" id="viewFriend__${offlineFriend._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-eye"></i></button>
-                                <button class="mx-2 btn btn-sm btn-outline-primary" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-comments"></i></button>
-                                <button class="mx-2 btn btn-sm btn-outline-danger" id="deleteFriend__${offlineFriend._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-user-times style="red"></i></button>
-                            </div>
-                        </li>
-                `);
-                })
-        }
+    }
+
+    function friendBackToOnline(friend){
+        $('.friends__list__friends ul').prepend($(`#friend__${friend.username}`));
+        $(`#friend__${friend.username}`).addClass('friends__online').removeClass('friends__offline');
+    }
+
+    function renderNewFriend(onlineUsers, newFriend){
+       $('.friends__list__friends ul').prepend(`
+            <li id="friend__${newFriend.username}">
+                <div class="d-flex justify-content-start align-items-center ">
+                    <img src="${newFriend.userImage}" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
+                    <strong>${newFriend.username}</strong>
+                    <label class="ml-auto">
+                            <i class="fa fa-circle"></i>
+                    </label>
+                </div>
+                <div class="user__icons" style="display: none">
+                    <button class="mx-2 btn btn-sm btn-outline-secondary" id="viewFriend__${newFriend._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-eye"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-primary" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-comments"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-danger" id="deleteFriend__${newFriend._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-user-times style="red"></i></button>
+                </div>
+            </li>
+       `)
+       if(onlineUsers.includes(newFriend.username)){
+           $(`#friend__${newFriend.username}`).addClass('friends__online');
+       }else{
+            $(`#friend__${newFriend.username}`).addClass('friends__offline');
+       }
     }
 </script>
