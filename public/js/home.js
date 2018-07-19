@@ -126,7 +126,13 @@ socket.on('renderRequest', (friendRequests) =>{
 })
 
 socket.on('renderFriendsList',({userFriends, onlineUsers}) =>{
-    renderFriendsList(userFriends, onlineUsers)
+    renderFriendsList(userFriends, onlineUsers);
+
+    $('.friends__list__friends li').hover(function(){
+        $(this).find('.friend__icons').css({display:'block'});
+    },function(){
+        $(this).find('.friend__icons').css({display:'none'});
+    })
 })
 
 socket.on('renderFriendBackOnline',(friend) =>{
@@ -136,3 +142,7 @@ socket.on('renderFriendBackOnline',(friend) =>{
 socket.on('renderNewFriend',({onlineUsers,friend}) =>{
     renderNewFriend(onlineUsers, friend);
 });
+
+socket.on('renderFriendBackOffline',(friend) => {
+    friendBackToOffline(friend);
+})

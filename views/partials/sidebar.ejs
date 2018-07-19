@@ -29,7 +29,13 @@
 
 <script>
     const userId = '<%= user._id %>';
-    const userName = '<%= user.username %>'
+    const userName = '<%= user.username %>';
+    let friendsList = [];
+    <% if(user.friendsList.length >0 ) { %>
+        <% user.friendsList.forEach(function(friend) { %>
+            friendsList.push('<%= friend.friendId %>')
+        <% }); %>
+    <% } %>
 
     function renderFriendsList(userFriends, onlineUsers){
         if(userFriends.length > 0){
@@ -44,7 +50,7 @@
                                         <i class="fa fa-circle" ></i>
                                 </label>
                             </div>
-                            <div class="user__icons" style="display: none">
+                            <div class="friend__icons" style="display: none">
                                 <button class="mx-2 btn btn-sm btn-outline-secondary" id="viewFriend__${friend._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-eye"></i></button>
                                 <button class="mx-2 btn btn-sm btn-outline-primary" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-comments"></i></button>
                                 <button class="mx-2 btn btn-sm btn-outline-danger" id="deleteFriend__${friend._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-user-times style="red"></i></button>
@@ -66,6 +72,11 @@
     function friendBackToOnline(friend){
         $('.friends__list__friends ul').prepend($(`#friend__${friend.username}`));
         $(`#friend__${friend.username}`).addClass('friends__online').removeClass('friends__offline');
+    }
+
+      function friendBackToOffline(friend){
+        $('.friends__list__friends ul').append($(`#friend__${friend.username}`));
+        $(`#friend__${friend.username}`).addClass('friends__offline').removeClass('friends__online');
     }
 
     function renderNewFriend(onlineUsers, newFriend){

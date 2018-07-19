@@ -36,6 +36,10 @@
   color:grey;
 }
 
+.friend__icons{
+  margin:5px;
+}
+
 /* all users list */
 .online__users{
   min-height: 85vh;
