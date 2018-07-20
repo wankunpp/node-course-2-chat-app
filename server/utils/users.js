@@ -22,6 +22,11 @@ class Users {
         return user;
     }
 
+    getUserByName(name) {
+        const user = this.users.find(user => user.name = name);
+        return user;
+    }
+
     getUsers(){
         return this.users.slice();
     }

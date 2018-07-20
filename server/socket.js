@@ -108,6 +108,28 @@ sockets.init = function (server){
             }).then(user => user.save());
         })
 
+        //user delete friend 
+        socket.on('deleteFriend',({userId,friendId}) => {
+            dbUsers.findByIdAndUpdate(userId,{
+                $pull:{friendsList: {friendId: friendId}}
+            }).then(user => {
+                dbUsers.findById(friendId).then(friend => {
+                    socket.emit('renderDeleteFriend',friend);
+                })
+            });
+
+            //friend should see he's been deleted by user immediately if he's online
+            dbUsers.findByIdAndUpdate(friendId, {
+                $pull: {friendsList: {friendId: userId}}
+            }).then(friend =>{
+                if(users.hasUser(friend.username)){
+                    dbUsers.findById(userId).then(user =>{
+                        socket.to(users.getUserByName(friend.username).id).emit('renderDeleteFriend',user);
+                    })
+                }
+            })
+        })
+
         socket.on("join-room", (params, callback) => {
             const room = params.room.toUpperCase();
 

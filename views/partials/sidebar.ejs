@@ -51,9 +51,9 @@
                                 </label>
                             </div>
                             <div class="friend__icons" style="display: none">
-                                <button class="mx-2 btn btn-sm btn-outline-secondary" id="viewFriend__${friend._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-eye"></i></button>
-                                <button class="mx-2 btn btn-sm btn-outline-primary" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-comments"></i></button>
-                                <button class="mx-2 btn btn-sm btn-outline-danger" id="deleteFriend__${friend._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-user-times style="red"></i></button>
+                                <button class="mx-2 btn btn-sm btn-outline-secondary" id="viewFriend__${friend._id}"  onclick="location.href='/user-profile/${friend._id}'"><i class="fa fa-eye"></i></button>
+                                <button class="mx-2 btn btn-sm btn-outline-primary"><i class="fa fa-comments"></i></button>
+                                <button class="mx-2 btn btn-sm btn-outline-danger" id="deleteFriend__${friend._id}"><i class="fa fa-user-times style="red"></i></button>
                             </div>
                         </li>
                 `);
