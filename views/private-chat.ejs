@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>RoomChat | SimpleChat</title>
+    <title>PrivateChat | SimpleChat</title>
 
     <link href="/css/libs/bootstrap.min.css" rel="stylesheet">
     <link href="/css/styles.css" rel="stylesheet">
@@ -18,7 +18,7 @@
         <div class="col-md-3">
                 <% include ./partials/sidebar %>
         </div>
-        <div class="col-md-7">
+        <div class="col-md-8">
             <div class="chat__main  mx-3 py-2 ">
                 <h2 class="text-center" id="room__name">Room Name</h1>
                 <ol id="messages" class="chat__messages border box-shadow"></ol>
@@ -31,17 +31,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-2">
-            <div class="online__users my-2 mx-2 text-center bg-white border">
-                <div class="roomusers__list__title">
-                    <i class="fa fa-users"></i> 
-                    <span>Room Users</span>
-                </div>
-                <ul class="room__users__list list-unstyled" >
-                </ul>
-            </div>
-        </div>
-
     </div>
 
     <script id="message-template" type="text/template">
@@ -60,8 +49,8 @@
     <script src="/js/libs/jquery-3.3.1.min.js"></script>
     <script src="/js/libs/moment.js"></script>
     <script src ='/js/libs/mustache.js'></script>
-    <script src ='/js/libs/deparam.js'></script>
-    <script src="/js/room-chat.js"></script>
+    <!-- <script src ='js/libs/deparam.js'></script> -->
+    <script src="/js/private-chat.js"></script>
     
     
 </body>

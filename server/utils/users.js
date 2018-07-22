@@ -23,7 +23,7 @@ class Users {
     }
 
     getUserByName(name) {
-        const user = this.users.find(user => user.name = name);
+        const user = this.users.find(user => user.name === name);
         return user;
     }
 
@@ -57,9 +57,17 @@ class Users {
     }
 
     hasUser(username) {
-        const usernames = this.users.slice().map(user => user.name);
-        if(usernames.indexOf(username) === -1) return false;
-        return true;
+        const user= this.users.find(user => user.name === username);
+        if(user) return true;
+        return false;
+    }
+
+    userLeaveRoom(id){
+        const user = this.users.find(user => user.id === id);
+        if(user){
+            this.users.find(user => user.id === id).room = undefined;
+        }
+        return user;
     }
 }
 

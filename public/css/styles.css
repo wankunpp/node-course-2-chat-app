@@ -59,6 +59,10 @@
   filter: grayscale(100%);
 }
 
+.allusers__online button{
+  padding: 0 10px;
+}
+
 /* room users list */
 .roomusers__list__title{
   background:rgb(35, 240, 113);

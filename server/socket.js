@@ -82,10 +82,10 @@ sockets.init = function (server){
                 })
             });
     
-        dbUsers.findByIdAndUpdate(friendId,{
-            $push:{friendsList:{friendId: userId}},
-            $pull: {friendRequest:{from: userId}}
-        }).then(friend => {
+            dbUsers.findByIdAndUpdate(friendId,{
+                $push:{friendsList:{friendId: userId}},
+                $pull: {friendRequest:{from: userId}}
+            }).then(friend => {
                 const requestOnline = users.users.find(ele => ele.name = friend.username);
                 //the friend should not see the request from the user if the user has confirmed the request from him and render the user to his friendList
                 if(requestOnline != undefined){
@@ -99,7 +99,7 @@ sockets.init = function (server){
                         socket.to(requestOnline.id).emit('renderNewFriend',{onlineUsers,friend});
                     })
                 }
-        });
+            });
         })
         //user decline friend request
         socket.on('declineRequest',({userId, friendId}) => {
@@ -130,12 +130,10 @@ sockets.init = function (server){
             })
         })
 
-        socket.on("join-room", (params, callback) => {
-            const room = params.room.toUpperCase();
-
-            if (!isRealString(params.name) || !isRealString(room)) {
-            return callback("name and room name are required");
-            } else if (users.getUserList(room).includes(params.name)) {
+        socket.on("join-room", ({userName,room}, callback) => {
+            if (!isRealString(room)) {
+            return callback("room name are required");
+            } else if (users.getUserList(room).includes(userName)) {
             return callback(
                 "this name is already used in this room, please use another name"
             );
@@ -146,16 +144,35 @@ sockets.init = function (server){
             socket.emit('renderRoomName',room);
 
             users.removeUser(socket.id);
-            users.addUser(socket.id, params.name, room);
+            users.addUser(socket.id, userName, room);
 
             io.to(room).emit("updateUserList", users.getUserList(room));
             io.emit("updateActivatedRoom", users.getRoomList());
 
             socket.emit("newMessage",generateMessage("Admin", `Welcome to Room ${room}`));
-            socket.broadcast.to(room).emit("newMessage",generateMessage("Admin", `${params.name} has joined`));
+            socket.broadcast.to(room).emit("newMessage",generateMessage("Admin", `${userName} has joined`));
 
             callback();
         });
+
+        socket.on('private-chat',({userName,chatWithId}) => {
+            users.removeUser(socket.id);
+            users.addUser(socket.id,userName);   
+
+            dbUsers.findOne({username: userName}).then(user =>{
+                const privateRoom = [user._id,chatWithId].sort().join();
+                socket.join(privateRoom);
+
+                socket.on("privateMessage", (message, callback) => {
+                    callback();
+                    if (isRealString(message.text)) {
+                        socket.emit("newMessage", generateMessage("Me", message.text));
+                        socket.broadcast.to(privateRoom).emit("newMessage", generateMessage(userName, message.text))
+                    }
+                });
+            })
+        })
+
 
         socket.on("createMessage", (message, callback) => {
             callback();
@@ -169,38 +186,39 @@ sockets.init = function (server){
             }
         });
 
+        socket.on("viewProfile",(userName) =>{
+            users.removeUser(socket.id);
+            users.addUser(socket.id, userName);
+        })
+
         socket.on("disconnect", () => {
             const user = users.removeUser(socket.id);
-
-            if (user) {
-            io.to(user.room).emit("updateUserList", users.getUserList(user.room));
-            io.emit('updateActivatedRoom', users.getRoomList());
-            io.to(user.room).emit(
-                "newMessage",
-                generateMessage("Admin", `${user.name} has left the room`)
-            );
+            if(user){
+                io.emit('updateActivatedRoom', users.getRoomList());
+                io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+                io.to(user.room).emit('newMessage',generateMessage('Admin',`${user.name} has left the room`));
+            }
 
             //render online user list when user log out
-            const onlineUsers = users.getUsers();
-            dbUsers.find({}).then((dbusers) =>{
-                io.emit('updateOnlineUsers',{dbusers,onlineUsers});
-            })
+            // const onlineUsers = users.getUsers();
+            // dbUsers.find({}).then((dbusers) =>{
+            //     io.emit('updateOnlineUsers',{dbusers,onlineUsers});
+            // })
 
             //user's friend should see user offline when user log out
-            dbUsers.findOne({username: user.name})
-                .populate('friendsList.friendId')
-                .then(user =>{
-                    if(user.friendsList.length >0){
-                        const userFriends = user.friendsList.map(friend => friend.friendId);
-                        userFriends.forEach(friend => {
-                            const friendOnline = onlineUsers.find(user=> user.name === friend.username)
-                            if(friendOnline != undefined){
-                                socket.to(friendOnline.id).emit('renderFriendBackOffline',user);
-                            }
-                        })
-                    }
-                })
-            }
+            // dbUsers.findOne({username: user.name})
+            //     .populate('friendsList.friendId')
+            //     .then(user =>{
+            //         if(user.friendsList.length >0){
+            //             const userFriends = user.friendsList.map(friend => friend.friendId);
+            //             userFriends.forEach(friend => {
+            //                 const friendOnline = onlineUsers.find(user=> user.name === friend.username)
+            //                 if(friendOnline != undefined){
+            //                     socket.to(friendOnline.id).emit('renderFriendBackOffline',user);
+            //                 }
+            //             })
+            //         }
+            //     })
         });
     })
 }

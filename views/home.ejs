@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Home | ChatApp</title>
+    <title>Home | SimpleChat</title>
 
     <link href="/css/libs/bootstrap.min.css" rel="stylesheet">
     <link href="/css/libs/webfonts/font-awesome.css" rel="stylesheet" >
@@ -21,7 +21,6 @@
             <div class="join__room my-2" >
                 <form id="join__room" action="/room-chat" method="GET">
                     <div class="input-group mb-3">
-                        <input  name="name" value="<%= user.username %>" type="hidden">
                         <input type="text" class="form-control" placeholder="Room Name" name="room">
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-primary" id="join__room__button">Join</button>

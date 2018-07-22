@@ -1,5 +1,7 @@
 const socket = io();
 
+const chatWithId = window.location.pathname.split('/')[2];
+
 const scollToBottom = () =>{
     const messages = jQuery('#messages');
     const newMessage = messages.children('li:last-child');
@@ -16,22 +18,7 @@ const scollToBottom = () =>{
 
 }
 
-socket.on('connect',() =>{
-    const room = jQuery.deparam(window.location.search).room.toUpperCase();
-
-    socket.emit('join-room', {userName,room}, (err) =>{
-        if(err){
-            alert(err);
-            window.location.href = '/home';
-        }else{
-            console.log('no error');
-        }
-    })
-})
-
-socket.on('renderRoomName', (roomName) =>{
-    $('#room__name').html(roomName);
-})
+socket.emit('private-chat',{userName,chatWithId});
 
 socket.on('newMessage',(message) => {
     var template = jQuery('#message-template').html();
@@ -46,27 +33,12 @@ socket.on('newMessage',(message) => {
     scollToBottom();
 })
 
-socket.on('updateUserList', (usernames) =>{
-    $('.room__users__list').empty();
-    usernames.forEach((username) =>{
-        $('.room__users__list').append(`
-            <li class="room__users__online">
-                <div class="d-flex justify-content-start align-items-center py-2">
-                    <img src="./files/IMG_3912.jpg" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
-                    <strong>${username}</strong>
-                    <label class="ml-auto">
-                        <i class="fa fa-circle" style="color:green"></i>
-                    </label>
-                </div>
-            </li>`);
-    });
-})
-
 $('#message-form').on('submit', (e) =>{
     e.preventDefault();
     var messageTextbox = '[name=message]';
 
-    socket.emit('createMessage', {
+    socket.emit('privateMessage', {
+        to: chatWithId,
         text: $(messageTextbox).val()
     }, function(){
         $(messageTextbox).val('');

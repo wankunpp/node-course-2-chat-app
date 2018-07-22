@@ -1,6 +1,6 @@
 const socket = io();
 
-socket.emit('viewProfile');
+socket.emit('viewProfile',userName);
 
 socket.on('renderFriendsList',({onlineUsersNames,allusers}) =>{
     renderFriendsList(allusers, onlineUsersNames)

@@ -1,6 +1,6 @@
 const socket = io();
 
-socket.emit('newuser-login',$('input[name="name"]').val());
+socket.emit('newuser-login',userName);
 
 socket.on('updateActivatedRoom',(rooms) =>{
     $('.room__list .row').empty();
@@ -61,9 +61,9 @@ socket.on('updateOnlineUsers',({dbusers,onlineUsers}) =>{
                     </label>
                 </div>
                 <div class="user__icons" style="display: none">
-                    <button class="mx-2 btn btn-sm btn-outline-secondary" id="view__${user._id}" style="padding-left: 10px; padding-right: 10px;" onclick="location.href='/user-profile/${user._id}'"><i class="fa fa-eye"></i></button>
-                    <button class="mx-2 btn btn-sm btn-outline-primary" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-comments"></i></button>
-                    <button class="mx-2 btn btn-sm btn-outline-success" id="addFriend__${user._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-user-plus"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-secondary" id="view__${user._id}" onclick="location.href='/user-profile/${user._id}'"><i class="fa fa-eye"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-primary"  onclick="location.href='/private-chat/${user._id}'"><i class="fa fa-comments"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-success" id="addFriend__${user._id}" ><i class="fa fa-user-plus"></i></button>
                 </div>
             </li>`)
         });
@@ -81,9 +81,9 @@ socket.on('updateOnlineUsers',({dbusers,onlineUsers}) =>{
                     </label>
                 </div>
                 <div class="user__icons" style="display: none">
-                    <button class="mx-2 btn btn-sm btn-outline-secondary" id="view__${user._id}" style="padding-left: 10px; padding-right: 10px;" onclick="location.href='/user-profile/${user._id}'"><i class="fa fa-eye"></i></button>
-                    <button class="mx-2 btn btn-sm btn-outline-primary" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-comments"></i></button>
-                    <button class="mx-2 btn btn-sm btn-outline-success" id="addFriend__${user._id}" style="padding-left: 10px; padding-right: 10px;"><i class="fa fa-user-plus"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-secondary" id="view__${user._id}" onclick="location.href='/user-profile/${user._id}'"><i class="fa fa-eye"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-primary" onclick="location.href='/private-chat/${user._id}'"><i class="fa fa-comments"></i></button>
+                    <button class="mx-2 btn btn-sm btn-outline-success" id="addFriend__${user._id}"><i class="fa fa-user-plus"></i></button>
                 </div>
             </li>`)
         })
