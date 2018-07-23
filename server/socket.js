@@ -6,6 +6,7 @@ const {generateMessage} = require('./utils/message');
 const {isRealString} = require('./utils/validation');
 
 const dbUsers = require('../models/user').User;
+const dbMessages = require('../models/message').Message;
 const users = new Users();
 
 sockets.init = function (server){
@@ -33,6 +34,7 @@ sockets.init = function (server){
                 .populate('friendsList.friendId')
                 .then(user =>{
                     socket.emit('renderRequest', user.friendRequest);
+                    socket.emit('renderMessage',user.messages);
                     if(user.friendsList.length >0){
                         const userFriends = user.friendsList.map(friend => friend.friendId);
                         socket.emit('renderFriendsList',{userFriends,onlineUsers});

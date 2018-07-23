@@ -63,7 +63,7 @@ socket.on('updateOnlineUsers',({dbusers,onlineUsers}) =>{
                 <div class="user__icons" style="display: none">
                     <button class="mx-2 btn btn-sm btn-outline-secondary" id="view__${user._id}" onclick="location.href='/user-profile/${user._id}'"><i class="fa fa-eye"></i></button>
                     <button class="mx-2 btn btn-sm btn-outline-primary"  onclick="location.href='/private-chat/${user._id}'"><i class="fa fa-comments"></i></button>
-                    <button class="mx-2 btn btn-sm btn-outline-success" id="addFriend__${user._id}" ><i class="fa fa-user-plus"></i></button>
+                    <a tabindex="0" class="btn btn-sm btn-outline-success popover-dismiss" role="button" data-toggle="popover" data-trigger="focus" data-content="Request Sent" data-placement="top" id="addFriend__${user._id}"><i class="fa fa-user-plus"></i></a>
                 </div>
             </li>`)
         });
@@ -83,7 +83,7 @@ socket.on('updateOnlineUsers',({dbusers,onlineUsers}) =>{
                 <div class="user__icons" style="display: none">
                     <button class="mx-2 btn btn-sm btn-outline-secondary" id="view__${user._id}" onclick="location.href='/user-profile/${user._id}'"><i class="fa fa-eye"></i></button>
                     <button class="mx-2 btn btn-sm btn-outline-primary" onclick="location.href='/private-chat/${user._id}'"><i class="fa fa-comments"></i></button>
-                    <button class="mx-2 btn btn-sm btn-outline-success" id="addFriend__${user._id}"><i class="fa fa-user-plus"></i></button>
+                    <a tabindex="0" class="btn btn-sm btn-outline-success popover-dismiss" role="button" data-toggle="popover" data-trigger="focus" data-content="Request Sent" data-placement="top" id="addFriend__${user._id}"><i class="fa fa-user-plus"></i></a>
                 </div>
             </li>`)
         })
@@ -95,14 +95,18 @@ socket.on('updateOnlineUsers',({dbusers,onlineUsers}) =>{
             $(this).find('.user__icons').css({display:'block'});
             //if the selected user is firend of the logged user , hide the button 
             if(friendsList.indexOf($(this).attr('id').substring(6)) >=0){
-                $(this).find('.user__icons button:nth-child(3)').css({display:'none'});
+                $(this).find('.user__icons a').css({display:'none'});
             }
         }
     }, function(){
         $(this).find('.user__icons').css({display:'none'})
     })
 
-    $('.user__icons button:nth-child(3)').on('click', function() {
+    $('.popover-dismiss').popover({
+        trigger: 'focus'
+      })
+
+    $('.user__icons a').on('click', function() {
         const friendId = $(this).attr('id').substring(11);
         socket.emit('sendFriendRequest',{userId,friendId});
     })
@@ -123,6 +127,11 @@ socket.on('renderRequest', (friendRequests) =>{
         $('#request__amount span').text(amount);
         $(this).closest('li').remove();
     })
+})
+
+socket.on('renderMessage',(messages) =>{
+    console.log(messages);
+    renderMessage(messages);
 })
 
 socket.on('renderFriendsList',({userFriends, onlineUsers}) =>{

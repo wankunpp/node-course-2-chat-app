@@ -6,8 +6,10 @@
       <ul class="dropdown-menu py-1" id="request__dropdown" style="width:300px; position:relative;">
         
       </ul>
-      <a class="p-4 text-dark" href="#">messages</a>
-      
+      <a class="p-4 text-dark dropdown-toggle" data-toggle="dropdown" id="message__amount" style="cursor:pointer"><i class="fa fa-envelope fa-lg"></i></a>
+      <ul class="dropdown-menu py-1" id="message__dropdown" style="width:300px; position:relative;">
+        
+      </ul>
     </nav>
     <a class="btn btn-outline-primary" href="#">logout</a>
   </div>
@@ -40,6 +42,36 @@
             </li>
           `)
         })
+      }
+    }
+
+    function renderMessage(messages){
+      $('#message__amount span').remove();
+      $('#message__dropdown').empty();
+      $('#message__dropdown').append('<h4>Messages</h4><hr>')
+      if(messages.length === 0){
+        $('#message__dropdown').append('<p>No Message</p>')
+      }else{
+        $('#message__amount').append(`
+         <span class="badge badge-danger">${messages.length}</span>
+        `)
+        // messages.forEach(message => {
+        //   $('#message__dropdown').append(`
+        //     <li class="my-1">
+        //       <div class="row" >
+        //         <div class="col-md-6">
+        //           <img class="img-responsive" src="${message.userImage}" style="width:50px; height:50px">
+        //           <span>${request.username}</span>
+        //         </div>
+        //         <div class="col-md-6">
+        //           <button class="btn btn-sm btn-success" id="confirm__request__${request._id}">Confirm</button>
+        //           <button class="btn btn-sm btn-danger" id="decline__request__${request._id}">Deline</button>
+        //         </div>
+        //       </div>
+        //       <hr>
+        //     </li>
+        //   `)
+        // })
       }
     }
   </script>

@@ -42,6 +42,13 @@ const UserSchema = new mongoose.Schema({
     {
       from:{type:mongoose.SchemaTypes.ObjectId, ref:'User'}
     }
+  ],
+  messages:[
+    {
+      from:{type: mongoose.SchemaTypes.ObjectId, ref: 'User'},
+      text:{type: String},
+      type:{type: String}
+    }
   ]
 });
 
