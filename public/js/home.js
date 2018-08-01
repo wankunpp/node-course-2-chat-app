@@ -112,55 +112,58 @@ socket.on('updateOnlineUsers',({dbusers,onlineUsers}) =>{
     })
 })
 
-socket.on('renderRequest', (friendRequests) =>{
-    const requests = friendRequests.map(friendRequest => friendRequest.from);
-    renderRequest(requests);
+renderNavbar(socket);
+renderFriendList(socket);
 
-    $('#request__dropdown li button').on('click', function(){
-        const friendId = $(this).attr('id').substring(18);
-        if($(this).attr('id').includes('confirm')){
-            socket.emit('confirmRequest', {userId, friendId});
-        }else{
-           socket.emit('declineRequest',{userId, friendId});
-        }
-        const amount = parseInt($('#request__amount span').text())-1;
-        $('#request__amount span').text(amount);
-        $(this).closest('li').remove();
-    })
-})
+// socket.on('renderRequest', (friendRequests) =>{
+//     const requests = friendRequests.map(friendRequest => friendRequest.from);
+//     renderRequest(requests);
 
-socket.on('renderMessage',(messages) =>{
-    console.log(messages);
-    renderMessage(messages);
-})
+//     $('#request__dropdown li button').on('click', function(){
+//         const friendId = $(this).attr('id').substring(18);
+//         if($(this).attr('id').includes('confirm')){
+//             socket.emit('confirmRequest', {userId, friendId});
+//         }else{
+//            socket.emit('declineRequest',{userId, friendId});
+//         }
+//         const amount = parseInt($('#request__amount span').text())-1;
+//         $('#request__amount span').text(amount);
+//         $(this).closest('li').remove();
+//     })
+// })
 
-socket.on('renderFriendsList',({userFriends, onlineUsers}) =>{
-    renderFriendsList(userFriends, onlineUsers);
+// socket.on('renderMessage',(messages) =>{
+//     renderMessage(messages);
+// })
 
-    $('.friends__list__friends li').hover(function(){
-        $(this).find('.friend__icons').css({display:'block'});
-    },function(){
-        $(this).find('.friend__icons').css({display:'none'});
-    })
 
-    $('.friend__icons button:nth-child(3)').on('click', function() {
-        const friendId = $(this).attr('id').substring(14);
-        socket.emit('deleteFriend',{userId,friendId});
-    })
-})
+// socket.on('renderFriendsList',({userFriends, onlineUsers}) =>{
+//     renderFriendsList(userFriends, onlineUsers);
 
-socket.on('renderFriendBackOnline',(friend) =>{
-    friendBackToOnline(friend);
-})
+//     $('.friends__list__friends li').hover(function(){
+//         $(this).find('.friend__icons').css({display:'block'});
+//     },function(){
+//         $(this).find('.friend__icons').css({display:'none'});
+//     })
 
-socket.on('renderNewFriend',({onlineUsers,friend}) =>{
-    renderNewFriend(onlineUsers, friend);
-});
+//     $('.friend__icons button:nth-child(3)').on('click', function() {
+//         const friendId = $(this).attr('id').substring(14);
+//         socket.emit('deleteFriend',{userId,friendId});
+//     })
+// })
 
-socket.on('renderFriendBackOffline',(friend) => {
-    friendBackToOffline(friend);
-})
+// socket.on('renderFriendBackOnline',(friend) =>{
+//     friendBackToOnline(friend);
+// })
 
-socket.on('renderDeleteFriend', friend =>{
-    $(`#friend__${friend.username}`).remove();
-})
+// socket.on('renderNewFriend',({onlineUsers,friend}) =>{
+//     renderNewFriend(onlineUsers, friend);
+// });
+
+// socket.on('renderFriendBackOffline',(friend) => {
+//     friendBackToOffline(friend);
+// })
+
+// socket.on('renderDeleteFriend', friend =>{
+//     $(`#friend__${friend.username}`).remove();
+// })

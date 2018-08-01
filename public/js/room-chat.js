@@ -23,8 +23,6 @@ socket.on('connect',() =>{
         if(err){
             alert(err);
             window.location.href = '/home';
-        }else{
-            console.log('no error');
         }
     })
 })
@@ -32,6 +30,9 @@ socket.on('connect',() =>{
 socket.on('renderRoomName', (roomName) =>{
     $('#room__name').html(roomName);
 })
+
+renderNavbar(socket);
+renderFriendList(socket);
 
 socket.on('newMessage',(message) => {
     var template = jQuery('#message-template').html();
@@ -46,14 +47,15 @@ socket.on('newMessage',(message) => {
     scollToBottom();
 })
 
-socket.on('updateUserList', (usernames) =>{
+socket.on('updateUserList', ({roomUserNames,dbusers}) =>{
     $('.room__users__list').empty();
-    usernames.forEach((username) =>{
+    const roomUsers = dbusers.filter(user => roomUserNames.includes(user.username));
+    roomUsers.forEach((user) =>{
         $('.room__users__list').append(`
             <li class="room__users__online">
                 <div class="d-flex justify-content-start align-items-center py-2">
-                    <img src="./files/IMG_3912.jpg" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
-                    <strong>${username}</strong>
+                    <img src="${user.userImage}" class="avatar rounded-circle d-flex  mr-2 z-depth-1">
+                    <strong>${user.username}</strong>
                     <label class="ml-auto">
                         <i class="fa fa-circle" style="color:green"></i>
                     </label>

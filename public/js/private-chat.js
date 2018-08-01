@@ -20,9 +20,25 @@ const scollToBottom = () =>{
 
 socket.emit('private-chat',{userName,chatWithId});
 
+renderNavbar(socket);
+renderFriendList(socket);
+
+socket.on('renderChatHistory', messages =>{
+    const template = $('#message-template').html();
+    messages.forEach(message =>{
+        const html = Mustache.render(template,{
+            text: message.text,
+            from: message.from.username === userName ? 'Me' : message.from.username,
+            createdAt: message.createAt
+        })
+        $('#messages').append(html);
+    })
+    scollToBottom();
+})
+
 socket.on('newMessage',(message) => {
     var template = jQuery('#message-template').html();
-    var formattedTime = moment(message.createdAt).format('h:mm a');
+    var formattedTime = moment(message.createdAt).format('MM/DD ddd HH:mm:ss');
     var html = Mustache.render(template,{
         text: message.text,
         from: message.from,

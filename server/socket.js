@@ -1,9 +1,11 @@
 let sockets = {};
 const socketIO = require('socket.io');
 const _ = require('lodash');
+const moment = require('moment');
 const {Users} =require('./utils/users');
 const {generateMessage} = require('./utils/message');
 const {isRealString} = require('./utils/validation');
+const{renderFriendListAndRequest} = require('./utils/friendListAndRequest');
 
 const dbUsers = require('../models/user').User;
 const dbMessages = require('../models/message').Message;
@@ -27,111 +29,9 @@ sockets.init = function (server){
             dbUsers.find({}).then((dbusers) =>{
                 io.emit('updateOnlineUsers',{dbusers,onlineUsers});
             })
-
-            //render friend requests and friends list
-            dbUsers.findOne({username: username})
-                .populate('friendRequest.from')
-                .populate('friendsList.friendId')
-                .then(user =>{
-                    socket.emit('renderRequest', user.friendRequest);
-                    socket.emit('renderMessage',user.messages);
-                    if(user.friendsList.length >0){
-                        const userFriends = user.friendsList.map(friend => friend.friendId);
-                        socket.emit('renderFriendsList',{userFriends,onlineUsers});
-                        //if user's friend back online , should render the user's friend list
-                        userFriends.forEach(friend => {
-                            const friendOnline = onlineUsers.find(user=> user.name === friend.username)
-                            if(friendOnline != undefined){
-                                socket.to(friendOnline.id).emit('renderFriendBackOnline',user);
-                            }
-                        })
-                    }
-                })
-
+            renderFriendListAndRequest(socket, dbUsers, users, username);
         })
         
-        //send friend requests
-        socket.on('sendFriendRequest',({userId,friendId}) =>{
-            dbUsers.findById(friendId).then(user =>{
-                //only if the two users are not friend and the user nerver get the same request before will the new request be sent
-                if((user.friendRequest.length === 0 || !user.friendRequest.map(request =>request.from.toString()).includes(userId)) && !user.friendsList.map(friend => friend.friendId.toString()).includes(userId)){
-                    user.friendRequest.push({from: userId});
-                    user.save().then(friend => {
-                        //if the user who got the request is online , should see the request immediately
-                        const requestOnline = users.getUsers().find(ele=> ele.name = friend.username);
-                        if(requestOnline != undefined){
-                            dbUsers.findById(friend._id)
-                            .populate('friendRequest.from')
-                            .then(user =>{
-                                socket.to(requestOnline.id).emit('renderRequest', user.friendRequest);
-                            })
-                        }
-                    })
-                }
-            })
-        })
-
-        //user confirm friend request, both user and this friend will remove the friend request 
-        socket.on('confirmRequest',({userId,friendId}) =>{
-            const onlineUsers = users.getUsers().map(ele=> ele.name);
-            dbUsers.findByIdAndUpdate(userId,{
-                $push:{friendsList: {friendId: friendId}},
-                $pull: {friendRequest: {from: friendId}}
-            }).then(user => {
-                //render new friend to user's friendList
-                dbUsers.findById(friendId).then(friend =>{
-                    socket.emit('renderNewFriend',{onlineUsers,friend});
-                })
-            });
-    
-            dbUsers.findByIdAndUpdate(friendId,{
-                $push:{friendsList:{friendId: userId}},
-                $pull: {friendRequest:{from: userId}}
-            }).then(friend => {
-                const requestOnline = users.users.find(ele => ele.name = friend.username);
-                //the friend should not see the request from the user if the user has confirmed the request from him and render the user to his friendList
-                if(requestOnline != undefined){
-                    dbUsers.findById(friend._id)
-                    .populate('friendRequest.from')
-                    .then(friend =>{
-                        socket.to(requestOnline.id).emit('renderRequest', friend.friendRequest);
-                    });
-
-                    dbUsers.findById(userId).then(friend =>{
-                        socket.to(requestOnline.id).emit('renderNewFriend',{onlineUsers,friend});
-                    })
-                }
-            });
-        })
-        //user decline friend request
-        socket.on('declineRequest',({userId, friendId}) => {
-            dbUsers.findByIdAndUpdate(userId, {
-                $pull:{friendRequest:{from: friendId}}
-            }).then(user => user.save());
-        })
-
-        //user delete friend 
-        socket.on('deleteFriend',({userId,friendId}) => {
-            dbUsers.findByIdAndUpdate(userId,{
-                $pull:{friendsList: {friendId: friendId}}
-            }).then(user => {
-                dbUsers.findById(friendId).then(friend => {
-                    socket.emit('renderDeleteFriend',friend);
-                })
-            });
-
-            //friend should see he's been deleted by user immediately if he's online
-            dbUsers.findByIdAndUpdate(friendId, {
-                $pull: {friendsList: {friendId: userId}}
-            }).then(friend =>{
-                if(users.hasUser(friend.username)){
-                    dbUsers.findById(userId).then(user =>{
-                        socket.to(users.getUserByName(friend.username).id).emit('renderDeleteFriend',user);
-                    })
-                }
-            })
-        })
-
         socket.on("join-room", ({userName,room}, callback) => {
             if (!isRealString(room)) {
             return callback("room name are required");
@@ -148,7 +48,12 @@ sockets.init = function (server){
             users.removeUser(socket.id);
             users.addUser(socket.id, userName, room);
 
-            io.to(room).emit("updateUserList", users.getUserList(room));
+            renderFriendListAndRequest(socket, dbUsers, users, userName);
+
+            dbUsers.find({}).then((dbusers) =>{
+                io.to(room).emit("updateUserList", {roomUserNames:users.getUserList(room),dbusers});
+            })
+
             io.emit("updateActivatedRoom", users.getRoomList());
 
             socket.emit("newMessage",generateMessage("Admin", `Welcome to Room ${room}`));
@@ -161,15 +66,49 @@ sockets.init = function (server){
             users.removeUser(socket.id);
             users.addUser(socket.id,userName);   
 
+            renderFriendListAndRequest(socket, dbUsers, users, userName);
+
             dbUsers.findOne({username: userName}).then(user =>{
                 const privateRoom = [user._id,chatWithId].sort().join();
                 socket.join(privateRoom);
+                // console.log(Object.keys(io.sockets.adapter.rooms[privateRoom].sockets) );
+
+                dbMessages.find({room: privateRoom})
+                            .sort({createAt:1})
+                            .populate('from')
+                            .then(messages =>{
+                                socket.emit('renderChatHistory', messages)
+                            })
 
                 socket.on("privateMessage", (message, callback) => {
                     callback();
                     if (isRealString(message.text)) {
                         socket.emit("newMessage", generateMessage("Me", message.text));
-                        socket.broadcast.to(privateRoom).emit("newMessage", generateMessage(userName, message.text))
+                        socket.broadcast.to(privateRoom).emit("newMessage", generateMessage(userName, message.text));
+                        if(Object.keys(io.sockets.adapter.rooms[privateRoom].sockets).length === 1){
+                            dbUsers.findByIdAndUpdate(chatWithId,{
+                                $push: {
+                                    messages:{
+                                        from: user._id,
+                                        text: message.text,
+                                        createAt: moment().format('MM/DD ddd HH:mm:ss')
+                                    }
+                                }
+                            }).then(chatUser =>{
+                                const requestOnline = users.users.find(ele => ele.name === chatUser.username);
+                                if(requestOnline != undefined){
+                                    socket.to(requestOnline.id).emit('receiveNewPrivateMessage', {user, message:chatUser.messages});
+                                }
+                            });
+                        }
+
+                        dbMessages.create({
+                            room: privateRoom,
+                            from: user._id,
+                            to: chatWithId,
+                            text: message.text,
+                            createAt: moment().format('MM/DD ddd HH:mm:ss')
+                        })
                     }
                 });
             })
@@ -191,13 +130,17 @@ sockets.init = function (server){
         socket.on("viewProfile",(userName) =>{
             users.removeUser(socket.id);
             users.addUser(socket.id, userName);
+
+            renderFriendListAndRequest(socket, dbUsers, users, userName);
         })
 
         socket.on("disconnect", () => {
             const user = users.removeUser(socket.id);
             if(user){
                 io.emit('updateActivatedRoom', users.getRoomList());
-                io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+                dbUsers.find({}).then((dbusers) =>{
+                    io.to(user.room).emit("updateUserList", {roomUserNames:users.getUserList(user.room),dbusers});
+                })
                 io.to(user.room).emit('newMessage',generateMessage('Admin',`${user.name} has left the room`));
             }
 

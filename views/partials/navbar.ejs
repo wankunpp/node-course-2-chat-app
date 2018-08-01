@@ -1,77 +1,91 @@
-<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-light border-bottom box-shadow">
-    <h5 class="my-0 ml-5 mr-md-auto font-weight-normal text-dark">Chat App</h5>
-    <nav class="my-2 my-md-0 mr-md-3">
-      <a class="p-4 text-dark" href="/home">Home</a>
-      <a class="p-4 text-dark dropdown-toggle" data-toggle="dropdown" id="request__amount" style="cursor:pointer"><i class="fa fa-user-friends fa-lg"></i></a>
-      <ul class="dropdown-menu py-1" id="request__dropdown" style="width:300px; position:relative;">
-        
-      </ul>
-      <a class="p-4 text-dark dropdown-toggle" data-toggle="dropdown" id="message__amount" style="cursor:pointer"><i class="fa fa-envelope fa-lg"></i></a>
-      <ul class="dropdown-menu py-1" id="message__dropdown" style="width:300px; position:relative;">
-        
-      </ul>
-    </nav>
-    <a class="btn btn-outline-primary" href="#">logout</a>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-3">
+  <h5 class="my-0 ml-5 mr-md-auto font-weight-normal text-white">Simple Chat</h5>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbars" aria-controls="navbars" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse " id="navbars">
+    <ul class="navbar-nav ml-auto my-0 mr-md-3 py-2 pr-4">
+      <li class="nav-item active px-4">
+        <a class="nav-link text-white" href="/home">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item dropdown px-3">
+        <a class="nav-link dropdown-toggle" id="request__amount" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user-friends fa-lg"></i></a>
+        <div class="dropdown-menu dropdown-menu-right" id="request__dropdown" style="width:400px;">
+         
+        </div>
+      </li>
+      <li class="nav-item dropdown px-3">
+        <a class="nav-link dropdown-toggle" id="message__amount" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-envelope fa-lg"></i></a>
+        <div class="dropdown-menu dropdown-menu-right" id="message__dropdown" style="width:400px;">
+          
+        </div>
+      </li>
+      <li class="nav-item px-3">
+        <a class="btn btn-primary" href="#">Logout</a>
+      </li>
+    </ul>
   </div>
+</nav>
 
-  <script>
-    function renderRequest(requests){
-      $('#request__amount span').remove();
-      $('#request__dropdown').empty();
-      $('#request__dropdown').append('<h4>Friend Requests</h4><hr>')
-      if(requests.length === 0){
-        $('#request__dropdown').append('<p>No friend request</p>')
-      }else{
-        $('#request__amount').append(`
-         <span class="badge badge-danger">${requests.length}</span>
-        `)
-        requests.forEach(request => {
-          $('#request__dropdown').append(`
-            <li class="my-1">
-              <div class="row" >
-                <div class="col-md-6">
-                  <img class="img-responsive" src="${request.userImage}" style="width:50px; height:50px">
-                  <span>${request.username}</span>
-                </div>
-                <div class="col-md-6">
-                  <button class="btn btn-sm btn-success" id="confirm__request__${request._id}">Confirm</button>
-                  <button class="btn btn-sm btn-danger" id="decline__request__${request._id}">Deline</button>
-                </div>
+<script>
+  function renderRequest(requests){
+    $('#request__amount span').remove();
+    $('#request__dropdown').empty();
+    $('#request__dropdown').append('<h4 class="text-center">Friend Requests</h4><hr>')
+    if(requests.length === 0){
+      $('#request__dropdown').append('<p>No friend request</p>')
+    }else{
+      $('#request__amount').append(`
+        <span class="badge badge-danger">${requests.length}</span>
+      `)
+      requests.forEach(request => {
+        $('#request__dropdown').append(`
+          <li class="my-1 dropdown-item">
+            <div class="row" >
+              <div class="col-md-6">
+                <img class="img-responsive" src="${request.userImage}" style="width:50px; height:50px">
+                <span>${request.username}</span>
               </div>
-              <hr>
-            </li>
-          `)
-        })
-      }
-    }
-
-    function renderMessage(messages){
-      $('#message__amount span').remove();
-      $('#message__dropdown').empty();
-      $('#message__dropdown').append('<h4>Messages</h4><hr>')
-      if(messages.length === 0){
-        $('#message__dropdown').append('<p>No Message</p>')
-      }else{
-        $('#message__amount').append(`
-         <span class="badge badge-danger">${messages.length}</span>
+              <div class="col-md-6">
+                <button class="btn btn-sm btn-success" id="confirm__request__${request._id}">Confirm</button>
+                <button class="btn btn-sm btn-danger" id="decline__request__${request._id}">Deline</button>
+              </div>
+            </div>
+            <hr>
+          </li>
         `)
-        // messages.forEach(message => {
-        //   $('#message__dropdown').append(`
-        //     <li class="my-1">
-        //       <div class="row" >
-        //         <div class="col-md-6">
-        //           <img class="img-responsive" src="${message.userImage}" style="width:50px; height:50px">
-        //           <span>${request.username}</span>
-        //         </div>
-        //         <div class="col-md-6">
-        //           <button class="btn btn-sm btn-success" id="confirm__request__${request._id}">Confirm</button>
-        //           <button class="btn btn-sm btn-danger" id="decline__request__${request._id}">Deline</button>
-        //         </div>
-        //       </div>
-        //       <hr>
-        //     </li>
-        //   `)
-        // })
-      }
+      })
     }
-  </script>
+  }
+
+  function renderMessage(messages){
+    $('#message__amount span').remove();
+    $('#message__dropdown').empty();
+    $('#message__dropdown').append('<h4 class="text-center">Messages</h4><hr>')
+    if(messages.length === 0){
+      $('#message__dropdown').append('<p>No Message</p>')
+    }else{
+      $('#message__amount').append(`
+        <span class="badge badge-danger">${messages.length}</span>
+      `)
+      messages.forEach(message => {
+        $('#message__dropdown').append(`
+          <li class="my-1 dropdown-item">
+            <div class="row" >
+              <div class="col-md-6">
+                <img class="img-responsive" src="${message.from.userImage}" style="width:50px; height:50px">
+                <span>${message.from.username}</span>
+                <span>${message.text}</span>
+              </div>
+              <div class="col-md-6>
+                <span>${message.text}</span>
+                </div>
+            </div>
+            <hr>
+          </li>
+        `)
+      })
+    }
+  }
+</script>

@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
-const {User} = require('./user')
+const {User} = require('./user');
 
 const MessageSchema = new mongoose.Schema({
+    room:{
+        type:String
+    },
     from:{
         type: mongoose.Schema.Types.ObjectId, ref: 'User',
         required: true
@@ -10,9 +13,12 @@ const MessageSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, ref: 'User',
         required:true
     },
-    type:{
+    text: {
         type: String,
-        default:''
+        required: true
+    },
+    createAt:{
+        type: String
     }
 })
 

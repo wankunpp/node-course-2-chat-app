@@ -47,7 +47,7 @@ const UserSchema = new mongoose.Schema({
     {
       from:{type: mongoose.SchemaTypes.ObjectId, ref: 'User'},
       text:{type: String},
-      type:{type: String}
+      createAt:{type: String}
     }
   ]
 });

@@ -2,9 +2,12 @@ const socket = io();
 
 socket.emit('viewProfile',userName);
 
-socket.on('renderFriendsList',({onlineUsersNames,allusers}) =>{
-    renderFriendsList(allusers, onlineUsersNames)
-})
+renderNavbar(socket);
+renderFriendList(socket);
+
+// socket.on('renderFriendsList',({onlineUsersNames,allusers}) =>{
+//     renderFriendsList(allusers, onlineUsersNames)
+// })
 
 $('#profile__edit__button').on('click',()=>{
     // $('<button type="button" class="btn btn-success" id="user__profile__save">save</button>').insertAfter($('#user__profile__form'));
