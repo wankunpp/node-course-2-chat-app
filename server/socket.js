@@ -5,7 +5,8 @@ const moment = require('moment');
 const {Users} =require('./utils/users');
 const {generateMessage} = require('./utils/message');
 const {isRealString} = require('./utils/validation');
-const{renderFriendListAndRequest} = require('./utils/friendListAndRequest');
+const {renderFriendListAndRequest} = require('./utils/friendListAndRequest');
+const {renderUnreadMessages} = require('./utils/unreadMessage');
 
 const dbUsers = require('../models/user').User;
 const dbMessages = require('../models/message').Message;
@@ -30,6 +31,7 @@ sockets.init = function (server){
                 io.emit('updateOnlineUsers',{dbusers,onlineUsers});
             })
             renderFriendListAndRequest(socket, dbUsers, users, username);
+            renderUnreadMessages(socket,dbUsers,username);
         })
         
         socket.on("join-room", ({userName,room}, callback) => {
@@ -86,20 +88,28 @@ sockets.init = function (server){
                         socket.emit("newMessage", generateMessage("Me", message.text));
                         socket.broadcast.to(privateRoom).emit("newMessage", generateMessage(userName, message.text));
                         if(Object.keys(io.sockets.adapter.rooms[privateRoom].sockets).length === 1){
-                            dbUsers.findByIdAndUpdate(chatWithId,{
-                                $push: {
-                                    messages:{
-                                        from: user._id,
-                                        text: message.text,
-                                        createAt: moment().format('MM/DD ddd HH:mm:ss')
-                                    }
-                                }
+                            dbUsers.findOneAndUpdate({
+                                "_id": chatWithId,
+                                "messages.from": user._id,
+                                "messages.type": "privateMessage"
+                            },{
+                                $inc : {"messages.$.amount" : 1} 
                             }).then(chatUser =>{
-                                const requestOnline = users.users.find(ele => ele.name === chatUser.username);
-                                if(requestOnline != undefined){
-                                    socket.to(requestOnline.id).emit('receiveNewPrivateMessage', {user, message:chatUser.messages});
+                                if(chatUser){
+                                    chatUser.save();
+                                }else{
+                                    dbUsers.findByIdAndUpdate(chatWithId,{
+                                        $push:{
+                                            messages:{
+                                                from: user._id,
+                                                amount: 1,
+                                                type: "privateMessage"
+                                            }
+                                        }
+                                    }).then(newChat => {
+                                        newChat.save()})
                                 }
-                            });
+                            })
                         }
 
                         dbMessages.create({

@@ -46,8 +46,8 @@ const UserSchema = new mongoose.Schema({
   messages:[
     {
       from:{type: mongoose.SchemaTypes.ObjectId, ref: 'User'},
-      text:{type: String},
-      createAt:{type: String}
+      amount: {type: Number, default: 1},
+      type:{type: String, default: "privateMessage"}
     }
   ]
 });

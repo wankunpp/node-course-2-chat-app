@@ -59,7 +59,7 @@
     }
   }
 
-  function renderMessage(messages){
+  function renderUnreadMessages(messages){
     $('#message__amount span').remove();
     $('#message__dropdown').empty();
     $('#message__dropdown').append('<h4 class="text-center">Messages</h4><hr>')
@@ -70,16 +70,39 @@
         <span class="badge badge-danger">${messages.length}</span>
       `)
       messages.forEach(message => {
+        var inputMessage;
+        if(message.type === 'privateMessage'){
+           inputMessage = `
+              You have <b>${message.amount}</b> unread messages from <i>${message.from.username}</i>.
+              <button class="btn btn-primary btn-sm ml-4" onclick="location.href='/private-chat/${message.from._id}'">View</button>
+              <button class="btn btn-secondary btn-sm">Close</button>
+            `
+        }else if(message.type === 'confirmRequest'){
+          inputMessage = `
+              <b><i>${message.from.username}</i></b> has accepted your friend request.
+              <button class="btn btn-primary btn-sm ml-4">Chat</button>
+              <button class="btn btn-secondary btn-sm">Close</button>
+            `
+        }else if(message.type === 'declineRequest'){
+          inputMessage = `
+              <b><i>${message.from.username}</i></b> has declined your friend request.
+              <button class="btn btn-secondary btn-sm ml-4">Close</button>
+            `
+        }else if(message.type === 'deleteFriend'){
+          inputMessage = `
+              <b><i>${message.from.username}</i></b> has remove you from friend list.
+              <button class="btn btn-secondary btn-sm ml-4">Close</button>
+            `
+        }
         $('#message__dropdown').append(`
-          <li class="my-1 dropdown-item">
+          <li class="my-1 dropdown-item" id="${message.from._id}+${message.type}">
             <div class="row" >
-              <div class="col-md-6">
-                <img class="img-responsive" src="${message.from.userImage}" style="width:50px; height:50px">
-                <span>${message.from.username}</span>
-                <span>${message.text}</span>
+              <div class="col-md-3">
+                <img class="img-responsive" src="${message.from.userImage}" style="width:80px; height:50px">
               </div>
-              <div class="col-md-6>
-                <span>${message.text}</span>
+              <div class="col-md-9">
+                <p style="white-space: nowrap;overflow: hidden;white-space: initial;">${inputMessage} </p>
+                
                 </div>
             </div>
             <hr>
