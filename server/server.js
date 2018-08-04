@@ -1,5 +1,5 @@
-// require('dotenv').config();
-require('../config/main/config');
+require('dotenv').config();
+
 const path = require("path");
 const http = require("http");
 const express = require("express");
@@ -22,7 +22,7 @@ const privateChat  = require("../routes/private-chat");
 const userProfile = require("../routes/user-profile");
 
 const publicPath = path.join(__dirname, "..", "public");
-const port = process.env.PORT;
+const port = process.env.PORT|| 3000;
 
 //init app
 const app = express();
