@@ -20,6 +20,9 @@ const s3 = new aws.S3();
 const storage = multerS3({
     s3: s3,
     bucket: process.env.S3_BUCKET_NAME,
+    metadata: function(req, file, cb){
+      cb(null, {fieldName: file.fieldname})
+    },
     key: function(req, file, cb){
       cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
@@ -70,7 +73,8 @@ router.post("/me",passport.authenticate('jwt',{
            $set: { 
                     firstName: req.body.firstName.trim() , 
                     lastName: req.body.lastName.trim(),
-                    userImage: '/uploads/'+req.file.filename ,
+                    // userImage: '/uploads/'+req.file.filename ,
+                    userImage: requ.file.fieldname
                   }
           }).then(user => {
                 res.redirect('/user-profile/me');
