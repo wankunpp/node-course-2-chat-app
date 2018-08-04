@@ -1,4 +1,4 @@
 node_modules/
 playground/
 
-/config/main/config.js
+config/main/config.js

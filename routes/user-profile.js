@@ -11,8 +11,8 @@ const fs = require('fs');
 const {User} = require('../models/user');
 
 aws.config.update({
-  accessKeyId: process.env.Access_Key_Id,
-  secretAccessKey: process.env.Secret_Access_Key
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 })
 
 const s3 = new aws.S3();
