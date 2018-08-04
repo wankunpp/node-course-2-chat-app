@@ -1,4 +1,4 @@
-require('../config/main/config');
+// require('../config/main/config');
 
 const path = require("path");
 const http = require("http");
