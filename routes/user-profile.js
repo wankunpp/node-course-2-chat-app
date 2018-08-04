@@ -74,7 +74,7 @@ router.post("/me",passport.authenticate('jwt',{
                     firstName: req.body.firstName.trim() , 
                     lastName: req.body.lastName.trim(),
                     // userImage: '/uploads/'+req.file.filename ,
-                    userImage: req.file.fieldname
+                    userImage: req.file.fielname
                   }
           }).then(user => {
                 res.redirect('/user-profile/me');
