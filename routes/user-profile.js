@@ -19,7 +19,7 @@ const s3 = new aws.S3();
 
 const storage = multerS3({
     s3: s3,
-    bucket: 'simple-chat-2018',
+    bucket: process.env.S3_BUCKET_NAME,
     key: function(req, file, cb){
       cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
