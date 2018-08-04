@@ -115,6 +115,3 @@ socket.on('updateOnlineUsers',({dbusers,onlineUsers}) =>{
 renderNavbar(socket);
 renderFriendList(socket);
 
-socket.on('renderUnreadMessages', messages =>{
-    renderUnreadMessages(messages);
-})

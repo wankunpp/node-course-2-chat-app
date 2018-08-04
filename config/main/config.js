@@ -4,4 +4,6 @@ if(env === 'development'){
     process.env.PORT = 3000;
     process.env.MONGODB_URI ='mongodb://localhost:27017/ChatApp';
     process.env.JWT_SECRET = 'dakldsjalkjd1231sad';
+    process.env.Access_Key_Id = 'AKIAJUY62OP2AH5TCB6A';
+    process.env.Secret_Access_Key = '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'
 }

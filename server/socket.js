@@ -70,6 +70,10 @@ sockets.init = function (server){
 
             renderFriendListAndRequest(socket, dbUsers, users, userName);
 
+            dbUsers.findById(chatWithId).then(chatUser =>{
+                socket.emit('renderChatTitle',chatUser)
+            })
+
             dbUsers.findOne({username: userName}).then(user =>{
                 const privateRoom = [user._id,chatWithId].sort().join();
                 socket.join(privateRoom);

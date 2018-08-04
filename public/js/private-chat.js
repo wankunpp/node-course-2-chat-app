@@ -23,6 +23,16 @@ socket.emit('private-chat',{userName,chatWithId});
 renderNavbar(socket);
 renderFriendList(socket);
 
+socket.on('renderChatTitle', (chatUser) =>{
+    const title = `
+        <div class ="row justify-content-md-center">
+            <img class="img-responsive rounded-circle" style="width:60px ;height:60px" src="${chatUser.userImage}"></img>
+            <span class="pl-3 pt-3">${chatUser.username}</span>
+        </div>
+    `
+    $('#room__name').html(title);
+})
+
 socket.on('renderChatHistory', messages =>{
     const template = $('#message-template').html();
     messages.forEach(message =>{

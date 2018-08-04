@@ -1,18 +1,37 @@
+require('../config/main/config');
 const express = require("express");
 const router = express.Router();
 const {passport} = require('../config/passport');
 const multer = require('multer');
+const multerS3 = require('multer-s3');
+const aws = require('aws-sdk');
 const path = require('path');
 const fs = require('fs');
 
 const {User} = require('../models/user');
 
-const storage = multer.diskStorage({
-  destination:'./public/uploads/',
-  filename: function(req, file, cb){
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-  }
-});
+aws.config.update({
+  accessKeyId: process.env.Access_Key_Id,
+  secretAccessKey: process.env.Secret_Access_Key
+})
+
+const s3 = new aws.S3();
+
+const storage = multerS3({
+    s3: s3,
+    bucket: 'simple-chat-2018',
+    key: function(req, file, cb){
+      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+  });
+// }else{
+//   storage = multer.diskStorage({
+//     destination:'./public/uploads/',
+//     filename: function(req, file, cb){
+//       cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+//     }
+//   });
+// }
 
 const upload = multer({
   storage: storage,
