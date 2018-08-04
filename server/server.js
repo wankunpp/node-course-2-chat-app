@@ -1,5 +1,5 @@
-// require('../config/main/config');
-
+// require('dotenv').config();
+require('../config/main/config');
 const path = require("path");
 const http = require("http");
 const express = require("express");

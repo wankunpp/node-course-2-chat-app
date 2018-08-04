@@ -1,4 +1,5 @@
-// require('../config/main/config');
+// require('dotenv').config();
+require('../config/main/config')
 const express = require("express");
 const router = express.Router();
 const {passport} = require('../config/passport');
@@ -41,7 +42,7 @@ const upload = multer({
   limits: {
             fileSize: 3000000,
           }
-}).single('form__image');
+});
 
 router.get("/me", passport.authenticate('jwt',{
   session:false,
@@ -51,49 +52,65 @@ router.get("/me", passport.authenticate('jwt',{
   res.render('user-profile',{user : req.user});
 });
 
-router.post("/me",passport.authenticate('jwt',{
-    session:false,
-    failureRedirect: '/',
-    failureFlash: true
-}),(req,res) =>{
-  upload(req,res, (err) =>{
-    if(err){
-      res.render('user-profile',{user: req.user, msg: err});
-    }else{
-      //if user upload a new image , delete the old one then update the database
-      if(req.file != undefined){
-        if(req.user.userImage !== '/files/default-avatar.jpg'){
-          const originalImage = path.join(__dirname,'..','public',req.user.userImage);
-          fs.unlink(originalImage,(err) => {
-            if (err) res.redirect('404');
-          });
-        }
-        User.findByIdAndUpdate(req.user._id,
-          {
-           $set: { 
-                    firstName: req.body.firstName.trim() , 
-                    lastName: req.body.lastName.trim(),
-                    // userImage: '/uploads/'+req.file.filename ,
-                    userImage: req.file.filename
-                  }
-          }).then(user => {
-                res.redirect('/user-profile/me');
-          })
-      }else{
-        User.findByIdAndUpdate(req.user._id, 
-            {
-              $set: {
-                firstName: req.body.firstName.trim(),
-                lastName: req.body.lastName.trim()
-              }
-            }).then( user => {
-              res.redirect('/user-profile/me');
-            })
-      }
+router.post("/me", passport.authenticate('jwt',{
+  session:false,
+  failureRedirect: '/',
+  failureFlash: true
+}),upload.single('form__image'),(req,res) =>{
+  User.findByIdAndUpdate(req.user._id, {
+    $set: {
+      firstName: req.body.firstName.trim(),
+      lastName: req.body.lastName.trim(),
+      userImage: `https://s3.us-east-2.amazonaws.com/${req.file.bucket}/${req.file.key}`
     }
+  }).then(user => {
+    res.redirect('/user-profile/me');
   })
-  
 })
+
+// router.post("/me",passport.authenticate('jwt',{
+//     session:false,
+//     failureRedirect: '/',
+//     failureFlash: true
+// }),(req,res) =>{
+//   upload(req,res, (err) =>{
+//     if(err){
+//       res.render('user-profile',{user: req.user, msg: err});
+//     }else{
+//       //if user upload a new image , delete the old one then update the database
+//       if(req.file != undefined){
+//         if(req.user.userImage !== '/files/default-avatar.jpg'){
+//           const originalImage = path.join(__dirname,'..','public',req.user.userImage);
+//           fs.unlink(originalImage,(err) => {
+//             if (err) res.redirect('404');
+//           });
+//         }
+//         User.findByIdAndUpdate(req.user._id,
+//           {
+//            $set: { 
+//                     firstName: req.body.firstName.trim() , 
+//                     lastName: req.body.lastName.trim(),
+//                     // userImage: '/uploads/'+req.file.filename ,
+//                     userImage: req.file.filename
+//                   }
+//           }).then(user => {
+//                 res.redirect('/user-profile/me');
+//           })
+//       }else{
+//         User.findByIdAndUpdate(req.user._id, 
+//             {
+//               $set: {
+//                 firstName: req.body.firstName.trim(),
+//                 lastName: req.body.lastName.trim()
+//               }
+//             }).then( user => {
+//               res.redirect('/user-profile/me');
+//             })
+//       }
+//     }
+//   })
+  
+// })
 
 router.get("/:userId", passport.authenticate('jwt',{
   session:false,
